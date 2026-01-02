@@ -1,8 +1,9 @@
 # Python
 __pycache__/
 *.pyc
+# Secrets
 .env
-
+*.env
 # Node
 node_modules/
 npm-debug.log
