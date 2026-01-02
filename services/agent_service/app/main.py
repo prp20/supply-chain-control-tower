@@ -6,17 +6,23 @@ import re
 from datetime import datetime
 from typing import TypedDict
 from dotenv import load_dotenv
+
 from langgraph.graph import StateGraph
 from langchain_groq import ChatGroq
 from langchain_core.messages import SystemMessage, HumanMessage
 
 load_dotenv()
+
 # -------------------------------------------------
-# App
+# App + Redis
 # -------------------------------------------------
 app = FastAPI(title="Agent Brain")
 
-redis_client = redis.Redis(host="redis", port=6379, decode_responses=True)
+redis_client = redis.Redis(
+    host="redis",
+    port=6379,
+    decode_responses=True
+)
 
 # -------------------------------------------------
 # LLM
@@ -37,64 +43,65 @@ class AgentState(TypedDict):
     decision: dict
 
 # -------------------------------------------------
-# UTILITY: Parse JSON safely
+# Utilities
 # -------------------------------------------------
-def extract_json(text: str) -> dict:
-    """Extract JSON from LLM response, handling markdown formatting."""
-    if not text or not text.strip():
-        raise ValueError("Empty response from LLM")
-    
-    # Remove markdown code blocks if present
-    text = re.sub(r'```json\n?|\n?```', '', text)
-    text = text.strip()
-    
+def safe_json(text: str) -> dict:
+    """Safely extract JSON from LLM output."""
+    if not text:
+        return {}
+
+    text = re.sub(r"```json|```", "", text).strip()
     try:
         return json.loads(text)
-    except json.JSONDecodeError as e:
-        raise ValueError(f"Failed to parse JSON: {text[:100]}...") from e
+    except Exception:
+        return {}
 
 # -------------------------------------------------
-# AGENT NODES
+# Nodes
 # -------------------------------------------------
+
+def ingest_node(state: AgentState):
+    """Guarantee prediction exists"""
+    return {
+        "prediction": state.get("prediction", {})
+    }
+
 
 def risk_agent(state: AgentState):
     p = state["prediction"]
 
-    prompt = f"""You are a supply chain risk analyst.
+    prompt = f"""
+You are a supply chain risk analyst.
 
 Input:
-- Risk Score: {p['risk_score']}
-- Avg Delay: {p['avg_delay_minutes']}
-- High Risk Events: {p['features']['high_risk_events']}
+- Risk Score: {p.get("risk_score")}
+- Avg Delay: {p.get("avg_delay_minutes")}
+- High Risk Events: {p.get("features", {}).get("high_risk_events")}
 
-Return ONLY valid JSON (no markdown, no extra text):
+Return ONLY JSON:
 {{
-  "risk_level": "HIGH or MEDIUM or LOW",
-  "summary": "Brief analysis summary"
-}}"""
+  "risk_level": "HIGH | MEDIUM | LOW",
+  "summary": "short explanation"
+}}
+"""
 
     res = llm.invoke([
-        SystemMessage(content="You analyze operational risk. Always respond with valid JSON only."),
+        SystemMessage(content="You are an expert supply chain AI."),
         HumanMessage(content=prompt)
     ])
 
-    try:
-        risk_data = extract_json(res.content)
-    except ValueError as e:
-        print(f"Error parsing risk response: {e}")
-        # Fallback to safe defaults
-        risk_data = {
-            "risk_level": "MEDIUM",
-            "summary": "Unable to analyze risk"
-        }
+    data = safe_json(res.content)
 
     return {
-        "risk_analysis": risk_data
+        "risk_analysis": {
+            "risk_level": data.get("risk_level", "MEDIUM"),
+            "summary": data.get("summary", "No clear risk identified")
+        }
     }
 
 
 def logistics_agent(state: AgentState):
-    risk = state["risk_analysis"].get("risk_level", "MEDIUM")
+    risk = state["risk_analysis"]["risk_level"]
 
     action = (
         "Reroute shipments and expedite freight"
@@ -104,49 +111,63 @@ def logistics_agent(state: AgentState):
 
     return {
         "logistics": {
-            "recommended_action": action
+            "action": action
         }
     }
 
 
 def inventory_agent(state: AgentState):
-    risk = state["risk_analysis"].get("risk_level", "MEDIUM")
+    risk = state["risk_analysis"]["risk_level"]
 
-    inventory_action = (
-        "Increase safety stock"
+    action = (
+        "Increase buffer stock by 20%"
         if risk == "HIGH"
-        else "No change"
+        else "Maintain current inventory"
     )
 
     return {
         "inventory": {
-            "inventory_action": inventory_action
+            "action": action
         }
     }
 
 
-def decision_agent(state: AgentState):
+def decision_node(state: AgentState):
     decision = {
         "risk": state["risk_analysis"],
         "logistics": state["logistics"],
         "inventory": state["inventory"]
     }
 
+    payload = {
+        "timestamp": datetime.utcnow().isoformat(),
+        "decision": decision
+    }
+
+    # Publish to Redis for UI
+    redis_client.publish("control_tower", json.dumps(payload))
+
+    # Save history
+    redis_client.lpush("agent:history", json.dumps(payload))
+    redis_client.ltrim("agent:history", 0, 50)
+
     return {
         "decision": decision
     }
 
 # -------------------------------------------------
-# LANGGRAPH
+# LangGraph Setup
 # -------------------------------------------------
 graph = StateGraph(AgentState)
 
+graph.add_node("ingest", ingest_node)
 graph.add_node("risk", risk_agent)
 graph.add_node("logistics", logistics_agent)
 graph.add_node("inventory", inventory_agent)
-graph.add_node("decision", decision_agent)
+graph.add_node("decision", decision_node)
 
-graph.set_entry_point("risk")
+graph.set_entry_point("ingest")
+graph.add_edge("ingest", "risk")
 graph.add_edge("risk", "logistics")
 graph.add_edge("logistics", "inventory")
 graph.add_edge("inventory", "decision")
@@ -159,7 +180,7 @@ agent_app = graph.compile()
 # -------------------------------------------------
 @app.get("/health")
 def health():
-    return {"status": "ok"}
+    return {"status": "agent online"}
 
 @app.post("/recommend")
 def recommend(payload: dict):
@@ -167,11 +188,7 @@ def recommend(payload: dict):
         "prediction": payload
     })
 
-    output = {
+    return {
         "timestamp": datetime.utcnow().isoformat(),
         "decision": result["decision"]
     }
-
-    redis_client.publish("control_tower", json.dumps(output))
-
-    return output
