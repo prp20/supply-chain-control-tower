@@ -1,0 +1,77 @@
+version: "3.9"
+
+services:
+  postgres:
+    image: postgres:15
+    environment:
+      POSTGRES_DB: supply_chain
+      POSTGRES_USER: sc_user
+      POSTGRES_PASSWORD: sc_pass
+    ports:
+      - "5432:5432"
+    volumes:
+      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/1_init.sql
+      - ./infra/postgres/seed.sql:/docker-entrypoint-initdb.d/2_seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U sc_user -d supply_chain"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+
+  redis:
+    image: redis:7
+    ports:
+      - "6379:6379"
+
+  api-gateway:
+    build: ./services/api_gateway
+    ports:
+      - "8000:8000"
+    depends_on:
+      - prediction-service
+
+  prediction-service:
+    build: ./services/prediction_service
+    ports:
+      - "8001:8000"
+
+  event-service:
+    build: ./services/event_service
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+  inventory-service:
+    build: ./services/inventory_service
+    depends_on:
+      postgres:
+        condition: service_healthy
+  agent-service:
+    build: ./services/agent_service
+    ports:
+      - "8004:8000"
+    depends_on:
+      - prediction-service
+      - event-service
+      - inventory-service
+      - postgres
+  ui:
+    build: ./ui/control-tower-ui
+    container_name: control-tower-ui
+    ports:
+      - "3000:80"
+    depends_on:
+      - api-gateway
+  data-service:
+    build: ./services/data_service
+    ports:
+      - "8003:8000"
+    depends_on:
+      postgres:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_DB: supply_chain
+      POSTGRES_USER: sc_user
+      POSTGRES_PASSWORD: sc_pass
