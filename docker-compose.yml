@@ -49,5 +49,20 @@ services:
       timeout: 5s
       retries: 5
 
+  data-ingestion-service:
+    build: ./services/data_ingestion
+    container_name: data_ingestion_service
+    depends_on:
+      persist-database:
+        condition: service_healthy
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: controltower_db
+      POSTGRES_USER: controltower
+      POSTGRES_PASSWORD: controltower
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
 volumes:
   pg_data:
