@@ -46,7 +46,6 @@ CREATE TABLE IF NOT EXISTS vehicles (
     id SERIAL PRIMARY KEY,
     vehicle_make TEXT,
     driver_name TEXT,
-    driver_dl_id TEXT UNIQUE,
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
@@ -58,6 +57,8 @@ CREATE TABLE IF NOT EXISTS trips (
     dest_lat NUMERIC,
     dest_long NUMERIC,
     route JSONB,
+    part_id INT REFERENCES parts(id),
+    Number_of_parts INT,
     trip_cost_estimate NUMERIC,
     trip_status TEXT DEFAULT 'YET_TO_START',
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
