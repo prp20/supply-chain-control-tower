@@ -74,6 +74,25 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     restart: always
-    
+  
+  api-gateway:
+    build: ./services/api_gateway
+    container_name: api_gateway
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: controltower_db
+      POSTGRES_USER: controltower
+      POSTGRES_PASSWORD: controltower
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8000:8000"
+  
 volumes:
   pg_data:
