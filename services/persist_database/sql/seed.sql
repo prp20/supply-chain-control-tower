@@ -1,11 +1,11 @@
 INSERT INTO suppliers (name, country, city, office_latitude, office_longitude, max_daily_capacity)
 VALUES
-('Detroit Auto Supplies', 'USA', 'Detroit', 42.3314, -83.0458, 500),
-('Bavarian Motors Supply', 'Germany', 'Munich', 48.1351, 11.5820, 400),
-('Tokyo Precision Parts', 'Japan', 'Tokyo', 35.6762, 139.6503, 450),
-('Monterrey Auto Components', 'Mexico', 'Monterrey', 25.6866, -100.3161, 350),
-('Seoul Mobility Systems', 'South Korea', 'Seoul', 37.5665, 126.9780, 420),
-('Pune AutoTech', 'India', 'Pune', 18.5204, 73.8567, 380);
+('Pacific Auto Components', 'USA', 'Los Angeles, CA', 34.0522, -118.2437, 500),
+('Southwest Drive Systems', 'USA', 'Phoenix, AZ', 33.4484, -112.0740, 420),
+('Gulf Coast Auto Supply', 'USA', 'Houston, TX', 29.7604, -95.3698, 480),
+('Bay Area Mobility Parts', 'USA', 'San Jose, CA', 37.3382, -121.8863, 450),
+('Rocky Mountain AutoTech', 'USA', 'Denver, CO', 39.7392, -104.9903, 400),
+('Southeast Vehicle Systems', 'USA', 'Atlanta, GA', 33.7490, -84.3880, 430);
 
 INSERT INTO parts (name, criticality, cost_per_piece)
 VALUES
@@ -23,26 +23,35 @@ VALUES
 
 INSERT INTO supplier_parts (supplier_id, part_id)
 VALUES
--- ECU
-(1,1),(2,1),
--- Transmission
-(2,2),(3,2),
--- Brake
-(1,3),(4,3),
--- Steering
+-- Engine Control Unit
+(1,1),(4,1),
+
+-- Transmission Assembly
+(2,2),(5,2),
+
+-- Brake System
+(1,3),(6,3),
+
+-- Steering Rack
 (3,4),(5,4),
--- Suspension
+
+-- Suspension Assembly
 (4,5),(6,5),
--- Airbag
+
+-- Airbag Module
 (2,6),(3,6),
+
 -- Fuel Pump
-(1,7),(6,7),
--- Battery
-(5,8),(3,8),
+(1,7),(5,7),
+
+-- Battery Pack
+(4,8),(6,8),
+
 -- Radiator
-(4,9),(6,9),
--- Exhaust
-(1,10),(4,10);
+(3,9),(2,9),
+
+-- Exhaust System
+(6,10),(1,10);
 
 INSERT INTO inventory (part_id, minimum_required, current_stock, criticality)
 VALUES
@@ -77,8 +86,16 @@ INSERT INTO trips (
     trip_status
 )
 VALUES
-(1, 48.1351, 11.5820, 42.3314, -83.0458, '{}'::jsonb, 1, 20, 15000, 'YET_TO_START'),
-(2, 35.6762, 139.6503, 42.3314, -83.0458, '{}'::jsonb, 2, 15, 20000, 'YET_TO_START'),
-(3, 25.6866, -100.3161, 42.3314, -83.0458, '{}'::jsonb, 3, 30, 12000, 'YET_TO_START'),
-(4, 18.5204, 73.8567, 42.3314, -83.0458, '{}'::jsonb, 8, 10, 25000, 'YET_TO_START');
+-- Los Angeles → Detroit
+(1, 34.0522, -118.2437, 42.3314, -83.0458, '{}'::jsonb, 1, 20, 15000, 'YET_TO_START'),
+
+-- Phoenix → Detroit
+(2, 33.4484, -112.0740, 42.3314, -83.0458, '{}'::jsonb, 2, 15, 14000, 'YET_TO_START'),
+
+-- Houston → Detroit
+(3, 29.7604, -95.3698, 42.3314, -83.0458, '{}'::jsonb, 3, 30, 11000, 'YET_TO_START'),
+
+-- San Jose → Detroit
+(4, 37.3382, -121.8863, 42.3314, -83.0458, '{}'::jsonb, 8, 10, 18000, 'YET_TO_START');
+
 

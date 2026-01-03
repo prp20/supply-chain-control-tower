@@ -64,5 +64,16 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
 
+  route-planner-service:
+    build: ./services/route_planner
+    container_name: route_planner_service
+    depends_on:
+      redis:
+        condition: service_started
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    restart: always
+    
 volumes:
   pg_data:
