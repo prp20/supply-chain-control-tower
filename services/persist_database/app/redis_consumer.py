@@ -3,14 +3,17 @@ import json
 from app.handlers.inventory_handler import handle_inventory_event
 from app.handlers.vehicle_handler import handle_vehicle_event
 from app.handlers.supplier_handler import handle_supplier_event
-from app.handlers.trip_handler import handle_trip_event
+from app.handlers.trip_handler import handle_trip_event, handle_route_plan_updated, handle_route_plan_created
 from app.dedup import is_event_processed, mark_event_processed
 
 STREAM_HANDLERS = {
     "inventory.events": handle_inventory_event,
     "vehicle.events": handle_vehicle_event,
     "supplier.events": handle_supplier_event,
-    "trip.events": handle_trip_event
+    "trip.events": handle_trip_event,
+    # "route.plan.updated": handle_route_plan_updated,
+    "route.plan.created": handle_route_plan_created,
+    "trip.delay.predicted": handle_trip_event
 }
 
 def consume_events(redis_client, db_conn):

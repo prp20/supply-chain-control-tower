@@ -1,19 +1,28 @@
-import random
 import time
 from app.redis_producer import publish_event
-from app.schemas import vehicle_gps_schema
 
 def stream_vehicle_gps(vehicles):
-    while True:
-        vehicle = random.choice(vehicles)
+    print(f"🚚 Starting GPS for {len(vehicles)} vehicles")
 
-        payload = vehicle_gps_schema(
-            vehicle_id=vehicle["vehicle_id"],
-            trip_id=vehicle["trip_id"],
-            lat=vehicle["lat"] + random.uniform(-0.01, 0.01),
-            long=vehicle["long"] + random.uniform(-0.01, 0.01),
-            speed=random.randint(40, 80)
-        )
+    for v in vehicles:
+        route = v["route"]
 
-        publish_event("vehicle.events", "VEHICLE_GPS_UPDATE", payload)
-        time.sleep(2)
+        # Safety check
+        if not route or "geometry" not in route:
+            continue
+
+        coordinates = route["geometry"]["coordinates"]
+
+        for lon, lat in coordinates:
+            publish_event(
+                "vehicle.events",
+                "VEHICLE_GPS_UPDATE",
+                {
+                    "trip_id": v["trip_id"],
+                    "vehicle_id": v["vehicle_id"],
+                    "lat": lat,
+                    "long": lon,
+                    "speed": 60
+                }
+            )
+            time.sleep(1)

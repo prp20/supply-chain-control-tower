@@ -53,6 +53,40 @@ def handle_event(stream, payload):
             )
         )
 
+    elif stream == "trip.route.requested":
+        route = get_route(
+            payload["start_lat"],
+            payload["start_long"],
+            payload["dest_lat"],
+            payload["dest_long"]
+        )
+
+        adjusted_eta, delay_prob, risks = adjust_eta(
+            route["duration_minutes"]
+        )
+
+        publish(
+            "route.plan.created",
+            "ROUTE_PLAN_CREATED",
+            {
+                "trip_id": payload["trip_id"],
+                "route": route,
+                "adjusted_eta": adjusted_eta,
+                "confidence": 1 - delay_prob
+            }
+        )
+
+    elif stream in ("vehicle.events", "traffic.events", "news.events"):
+        publish(
+            "route.status.updated",
+            "ROUTE_STATUS_UPDATED",
+            {
+                "trip_id": payload.get("trip_id"),
+                "eta_adjustment_reason": stream
+            }
+        )
+
+
 def main():
     print("🚦 Route Planner Service started")
     consume_events(handle_event)

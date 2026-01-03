@@ -10,6 +10,8 @@ CREATE TABLE IF NOT EXISTS suppliers (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE suppliers
+ADD CONSTRAINT unique_supplier_name UNIQUE (name);
 
 -- Parts
 CREATE TABLE IF NOT EXISTS parts (
@@ -22,6 +24,8 @@ CREATE TABLE IF NOT EXISTS parts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE parts
+ADD CONSTRAINT unique_part_name UNIQUE (name);
 
 -- Supplier ↔ Parts
 CREATE TABLE IF NOT EXISTS supplier_parts (
@@ -40,6 +44,9 @@ CREATE TABLE IF NOT EXISTS inventory (
     criticality TEXT,
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
+
+ALTER TABLE inventory
+ADD CONSTRAINT unique_inventory_part UNIQUE (part_id);
 
 -- Vehicles available
 CREATE TABLE IF NOT EXISTS vehicles (
@@ -64,3 +71,5 @@ CREATE TABLE IF NOT EXISTS trips (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+ALTER TABLE trips
+ADD CONSTRAINT unique_vehicle_trip UNIQUE (vehicle_id, part_id, trip_status);

@@ -8,12 +8,21 @@ def main():
     db_conn = get_db_connection()
     cursor = db_conn.cursor()
     BASE_DIR = "/app"
-
-    print("🔹 Running init.sql")
-    run_sql_file(cursor, f"{BASE_DIR}/sql/init.sql")
-
-    print("🔹 Running seed.sql")
-    run_sql_file(cursor, f"{BASE_DIR}/sql/seed.sql")
+    try:
+        print("🔹 Running init.sql")
+        run_sql_file(cursor, f"{BASE_DIR}/sql/init.sql")
+        db_conn.commit()
+    except Exception as e:
+        db_conn.rollback()
+        print("❌ Seed failed:", e)
+    
+    try:
+        print("🔹 Running seed.sql")
+        run_sql_file(cursor, f"{BASE_DIR}/sql/seed.sql")
+        db_conn.commit()
+    except Exception as e:
+        db_conn.rollback()
+        print("❌ Seed failed:", e)
 
     # Dedup table
     cursor.execute("""

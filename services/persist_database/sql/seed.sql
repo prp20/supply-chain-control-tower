@@ -5,7 +5,9 @@ VALUES
 ('Gulf Coast Auto Supply', 'USA', 'Houston, TX', 29.7604, -95.3698, 480),
 ('Bay Area Mobility Parts', 'USA', 'San Jose, CA', 37.3382, -121.8863, 450),
 ('Rocky Mountain AutoTech', 'USA', 'Denver, CO', 39.7392, -104.9903, 400),
-('Southeast Vehicle Systems', 'USA', 'Atlanta, GA', 33.7490, -84.3880, 430);
+('Southeast Vehicle Systems', 'USA', 'Atlanta, GA', 33.7490, -84.3880, 430)
+ON CONFLICT (name) DO NOTHING;
+
 
 INSERT INTO parts (name, criticality, cost_per_piece)
 VALUES
@@ -18,7 +20,8 @@ VALUES
 ('Fuel Pump', 'HIGH', 400),
 ('Battery Pack', 'CRITICAL', 3000),
 ('Radiator', 'MEDIUM', 500),
-('Exhaust System', 'LOW', 300);
+('Exhaust System', 'LOW', 300)
+ON CONFLICT (name) DO NOTHING;
 
 
 INSERT INTO supplier_parts (supplier_id, part_id)
@@ -51,7 +54,8 @@ VALUES
 (3,9),(2,9),
 
 -- Exhaust System
-(6,10),(1,10);
+(6,10),(1,10)
+ON CONFLICT (supplier_id, part_id) DO NOTHING;
 
 INSERT INTO inventory (part_id, minimum_required, current_stock, criticality)
 VALUES
@@ -64,14 +68,16 @@ VALUES
 (7, 60, 140, 'HIGH'),
 (8, 20, 60, 'CRITICAL'),
 (9, 50, 130, 'MEDIUM'),
-(10, 80, 200, 'LOW');
+(10, 80, 200, 'LOW')
+ON CONFLICT (part_id) DO NOTHING;
 
 INSERT INTO vehicles (vehicle_make, driver_name)
 VALUES
 ('Volvo FH', 'John Miller'),
 ('Scania R500', 'Alex Rodriguez'),
 ('Mercedes Actros', 'Sven Karlsson'),
-('MAN TGX', 'Robert Brown');
+('MAN TGX', 'Robert Brown')
+ON CONFLICT DO NOTHING;
 
 INSERT INTO trips (
     vehicle_id,
@@ -96,6 +102,7 @@ VALUES
 (3, 29.7604, -95.3698, 42.3314, -83.0458, '{}'::jsonb, 3, 30, 11000, 'YET_TO_START'),
 
 -- San Jose → Detroit
-(4, 37.3382, -121.8863, 42.3314, -83.0458, '{}'::jsonb, 8, 10, 18000, 'YET_TO_START');
+(4, 37.3382, -121.8863, 42.3314, -83.0458, '{}'::jsonb, 8, 10, 18000, 'YET_TO_START')
+ON CONFLICT DO NOTHING;
 
 
