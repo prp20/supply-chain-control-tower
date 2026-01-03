@@ -3,7 +3,7 @@ import redis
 import json
 import os
 import re
-from datetime import datetime
+from datetime import datetime, UTC
 from typing import TypedDict
 from dotenv import load_dotenv
 
@@ -140,12 +140,17 @@ def decision_node(state: AgentState):
     }
 
     payload = {
-        "timestamp": datetime.utcnow().isoformat(),
-        "decision": decision
+        "type": "prediction",
+        "risk": decision['risk'],
+        "logistics": decision["logistics"],
+        "inventory": decision["inventory"],
+        "timestamp": datetime.now(UTC).isoformat()
     }
 
     # Publish to Redis for UI
-    redis_client.publish("control_tower", json.dumps(payload))
+    redis_client.publish(
+        "control_tower",
+        json.dumps(payload))
 
     # Save history
     redis_client.lpush("agent:history", json.dumps(payload))
