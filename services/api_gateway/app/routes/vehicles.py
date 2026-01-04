@@ -12,7 +12,7 @@ def get_vehicles():
         SELECT
             t.id AS trip_id,
             v.id AS vehicle_id,
-            v.vehicle_make,
+            v.vehicle_make
         FROM trips t
         JOIN vehicles v ON v.id = t.vehicle_id
         WHERE t.route IS NOT NULL
