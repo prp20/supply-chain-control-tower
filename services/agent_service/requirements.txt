@@ -1,8 +1,8 @@
-langgraph
-langchain
-langchain-groq
 redis
-fastapi
-uvicorn
-python-dotenv
+langchain
+langgraph
+pydantic
 langchain-community
+langchain-groq
+python-dotenv
+groq

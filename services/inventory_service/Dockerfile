@@ -2,8 +2,9 @@ FROM python:3.11-slim
 
 WORKDIR /app
 
-COPY main.py .
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
 
-RUN pip install fastapi uvicorn psycopg2-binary redis
+COPY app ./app
 
-CMD ["python", "main.py"]
+CMD ["python", "-m", "app.main"]

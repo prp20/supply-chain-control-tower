@@ -3,77 +3,143 @@ version: "3.9"
 services:
   postgres:
     image: postgres:15
+    container_name: control_tower_postgres
     environment:
-      POSTGRES_DB: supply_chain
-      POSTGRES_USER: sc_user
-      POSTGRES_PASSWORD: sc_pass
+      POSTGRES_USER: controltower
+      POSTGRES_PASSWORD: controltower
+      POSTGRES_DB: controltower_db
     ports:
       - "5432:5432"
     volumes:
-      - ./infra/postgres/init.sql:/docker-entrypoint-initdb.d/1_init.sql
-      - ./infra/postgres/seed.sql:/docker-entrypoint-initdb.d/2_seed.sql
+      - pg_data:/var/lib/postgresql/data
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U sc_user -d supply_chain"]
+      test: ["CMD-SHELL", "pg_isready -U controltower -d controltower_db"]
       interval: 5s
       timeout: 5s
       retries: 5
 
   redis:
     image: redis:7
+    container_name: control_tower_redis
     ports:
       - "6379:6379"
 
-  api-gateway:
-    build: ./services/api_gateway
-    ports:
-      - "8000:8000"
-    depends_on:
-      - prediction-service
-
-  prediction-service:
-    build: ./services/prediction_service
-    ports:
-      - "8001:8000"
-
-  event-service:
-    build: ./services/event_service
+  persist-database:
+    build: ./services/persist_database
+    container_name: persist_database_service
     depends_on:
       postgres:
         condition: service_healthy
       redis:
         condition: service_started
-  inventory-service:
-    build: ./services/inventory_service
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: controltower_db
+      POSTGRES_USER: controltower
+      POSTGRES_PASSWORD: controltower
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    volumes:
+      - ./services/persist_database/sql:/app/sql
+    restart: always
+    healthcheck:
+      test: ["CMD", "python", "-c", "import socket; socket.gethostbyname('postgres')"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  data-ingestion-service:
+    build: ./services/data_ingestion
+    container_name: data_ingestion_service
     depends_on:
-      postgres:
-        condition: service_healthy
-  agent-service:
-    build: ./services/agent_service
-    ports:
-      - "8004:8000"
-    depends_on:
-      - prediction-service
-      - event-service
-      - inventory-service
-      - postgres
-    env_file:
-      - ./services/agent_service/app/.env
-  ui:
-    build: ./ui/control-tower-ui
-    container_name: control-tower-ui
-    ports:
-      - "3000:80"
-    depends_on:
-      - api-gateway
-  data-service:
-    build: ./services/data_service
-    ports:
-      - "8003:8000"
-    depends_on:
-      postgres:
+      persist-database:
         condition: service_healthy
     environment:
       POSTGRES_HOST: postgres
-      POSTGRES_DB: supply_chain
-      POSTGRES_USER: sc_user
-      POSTGRES_PASSWORD: sc_pass
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: controltower_db
+      POSTGRES_USER: controltower
+      POSTGRES_PASSWORD: controltower
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+
+  route-planner-service:
+    build: ./services/route_planner
+    container_name: route_planner_service
+    depends_on:
+      redis:
+        condition: service_started
+    environment:
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    restart: always
+
+  # 🔹 NEW: Inventory Service
+  inventory-service:
+    build: ./services/inventory_service
+    container_name: inventory_service
+    depends_on:
+      persist-database:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: controltower_db
+      POSTGRES_USER: controltower
+      POSTGRES_PASSWORD: controltower
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    restart: always
+
+
+  api-gateway:
+    build: ./services/api_gateway
+    container_name: api_gateway
+    depends_on:
+      postgres:
+        condition: service_started
+      redis:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: controltower_db
+      POSTGRES_USER: controltower
+      POSTGRES_PASSWORD: controltower
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    ports:
+      - "8000:8000"
+
+  # 🎨 UI Dashboard Service
+  ui-dashboard:
+    build: ./ui-dashboard
+    container_name: ui_dashboard
+    depends_on:
+      api-gateway:
+        condition: service_started
+    ports:
+      - "80:80"
+    environment:
+      VITE_API_URL: http://api-gateway:8000
+    restart: always
+    healthcheck:
+      test: ["CMD", "wget", "--quiet", "--tries=1", "--spider", "http://localhost/health"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+  agent-service:
+    build: ./services/agent_service
+    container_name: agent_service
+    depends_on:
+      redis:
+        condition: service_started
+    restart: always
+    env_file:
+      - ./services/agent_service/.env
+
+volumes:
+  pg_data:

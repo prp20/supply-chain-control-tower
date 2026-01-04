@@ -1,72 +1,36 @@
-from fastapi import FastAPI, Request
-from fastapi.responses import JSONResponse
-import requests
-from datetime import datetime
-import os
+import asyncio
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
+from fastapi.middleware.cors import CORSMiddleware
+from app.websocket_manager import ConnectionManager
+from app.redis_listener import redis_stream_listener
+from app.routes import vehicles, trips, inventory, health
 
-# -------------------------------------------------
-# App
-# -------------------------------------------------
-app = FastAPI(title="Supply Chain Control Tower")
+app = FastAPI(title="Control Tower API Gateway")
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=["*"],  # or ["http://localhost:3000"]
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
+manager = ConnectionManager()
 
-# -------------------------------------------------
-# Service URLs (Docker service names)
-# -------------------------------------------------
-PREDICTION_URL = os.getenv("PREDICTION_URL", "http://prediction-service:8000/predict")
-AGENT_URL = os.getenv("AGENT_URL", "http://agent-service:8000/recommend")
+app.include_router(health.router)
+app.include_router(vehicles.router)
+app.include_router(trips.router)
+app.include_router(inventory.router)
 
-# -------------------------------------------------
-# Health
-# -------------------------------------------------
-@app.get("/health")
-def health():
-    return {
-        "status": "ok",
-        "service": "api-gateway",
-        "time": datetime.utcnow().isoformat()
-    }
-
-# -------------------------------------------------
-# Control Tower Endpoint
-# -------------------------------------------------
-@app.post("/control-tower")
-def control_tower():
-    response = {
-        "generated_at": datetime.utcnow().isoformat(),
-        "prediction": None,
-        "decision": None,
-        "errors": []
-    }
-
-    # ----------------------------
-    # 1. Prediction
-    # ----------------------------
+@app.websocket("/ws/live")
+async def websocket_endpoint(websocket: WebSocket):
+    await manager.connect(websocket)
     try:
-        pred = requests.get(PREDICTION_URL, timeout=5).json()
-        response["prediction"] = pred
-    except Exception as e:
-        response["errors"].append(f"Prediction error: {str(e)}")
-        return JSONResponse(response, status_code=500)
+        while True:
+            data = await websocket.receive_text()
+            # Handle subscription/unsubscription messages
+            await manager.handle_client_message(websocket, data)
+    except WebSocketDisconnect:
+        manager.disconnect(websocket)
 
-    # ----------------------------
-    # 2. Agent Decision
-    # ----------------------------
-    try:
-        agent_payload = {
-            "risk_score": pred["risk_score"],
-            "avg_delay_minutes": pred["avg_delay_minutes"],
-            "features": pred["features"]
-        }
-
-        agent = requests.post(
-            AGENT_URL,
-            json=agent_payload,
-            timeout=5
-        ).json()
-
-        response["decision"] = agent
-
-    except Exception as e:
-        response["errors"].append(f"Agent error: {str(e)}")
-
-    return response
+@app.on_event("startup")
+async def startup_event():
+    asyncio.create_task(redis_stream_listener(manager))
