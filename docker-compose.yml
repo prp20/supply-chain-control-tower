@@ -74,7 +74,27 @@ services:
       REDIS_HOST: redis
       REDIS_PORT: 6379
     restart: always
-  
+
+  # 🔹 NEW: Inventory Service
+  inventory-service:
+    build: ./services/inventory_service
+    container_name: inventory_service
+    depends_on:
+      persist-database:
+        condition: service_healthy
+      redis:
+        condition: service_started
+    environment:
+      POSTGRES_HOST: postgres
+      POSTGRES_PORT: 5432
+      POSTGRES_DB: controltower_db
+      POSTGRES_USER: controltower
+      POSTGRES_PASSWORD: controltower
+      REDIS_HOST: redis
+      REDIS_PORT: 6379
+    restart: always
+
+
   api-gateway:
     build: ./services/api_gateway
     container_name: api_gateway
@@ -93,6 +113,6 @@ services:
       REDIS_PORT: 6379
     ports:
       - "8000:8000"
-  
+
 volumes:
   pg_data:

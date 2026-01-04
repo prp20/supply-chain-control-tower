@@ -6,7 +6,10 @@ from app.websocket_manager import ConnectionManager
 STREAM_PREFIXES = [
     "vehicle.events.",
     "route.status.updated",
-    "trip.delay.predicted"
+    "trip.delay.predicted",
+    "inventory.health.updated",
+    "inventory.low_stock",
+    "inventory.replenishment.recommended"
 ]
 
 stream_offsets = {}
