@@ -1,7 +1,6 @@
 import json
 
 def handle_trip_event(cursor, payload: dict):
-    # Only update if this event actually carries a trip_status
     if "trip_status" not in payload:
         return
 

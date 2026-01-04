@@ -1,5 +1,5 @@
 import asyncio
-from fastapi import FastAPI, WebSocket
+from fastapi import FastAPI, WebSocket, WebSocketDisconnect
 from fastapi.middleware.cors import CORSMiddleware
 from app.websocket_manager import ConnectionManager
 from app.redis_listener import redis_stream_listener
@@ -25,8 +25,10 @@ async def websocket_endpoint(websocket: WebSocket):
     await manager.connect(websocket)
     try:
         while True:
-            await websocket.receive_text()
-    except:
+            data = await websocket.receive_text()
+            # Handle subscription/unsubscription messages
+            await manager.handle_client_message(websocket, data)
+    except WebSocketDisconnect:
         manager.disconnect(websocket)
 
 @app.on_event("startup")

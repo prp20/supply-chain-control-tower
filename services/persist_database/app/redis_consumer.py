@@ -10,9 +10,15 @@ STREAM_HANDLERS = {
     "inventory.events": handle_inventory_event,
     "vehicle.events": handle_vehicle_event,
     "supplier.events": handle_supplier_event,
-    "trip.events": handle_trip_event,
-    # "route.plan.updated": handle_route_plan_updated,
+
+    # Trip lifecycle
+    "trip.started": handle_trip_event,
+    "trip.completed": handle_trip_event,
+
+    # Routing
     "route.plan.created": handle_route_plan_created,
+
+    # Risk / delay
     "trip.delay.predicted": handle_trip_event
 }
 

@@ -73,3 +73,15 @@ CREATE TABLE IF NOT EXISTS trips (
 
 ALTER TABLE trips
 ADD CONSTRAINT unique_vehicle_trip UNIQUE (vehicle_id, part_id, trip_status);
+
+CREATE TABLE IF NOT EXISTS inventory_analysis (
+    id SERIAL PRIMARY KEY,
+    part_id INT REFERENCES parts(id),
+    health_score INT,
+    risk_level TEXT,
+    stock_gap INT,
+    supplier_risk BOOLEAN,
+    recommendation TEXT,
+    analyzed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+);
+

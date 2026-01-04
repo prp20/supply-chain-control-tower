@@ -13,7 +13,6 @@ def get_vehicles():
             t.id AS trip_id,
             v.id AS vehicle_id,
             v.vehicle_make,
-            t.route
         FROM trips t
         JOIN vehicles v ON v.id = t.vehicle_id
         WHERE t.route IS NOT NULL
@@ -26,8 +25,7 @@ def get_vehicles():
         {
             "trip_id": r[0],
             "vehicle_id": r[1],
-            "vehicle_make": r[2],
-            "route": r[3]
+            "vehicle_make": r[2]
         }
         for r in rows
     ]

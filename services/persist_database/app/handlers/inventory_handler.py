@@ -11,3 +11,20 @@ def handle_inventory_event(cursor, payload: dict):
         """,
         (delta, part_id)
     )
+
+def handle_inventory_analysis(cursor, payload):
+    cursor.execute(
+        """
+        INSERT INTO inventory_analysis
+        (part_id, health_score, risk_level, stock_gap, supplier_risk, recommendation)
+        VALUES (%s, %s, %s, %s, %s, %s)
+        """,
+        (
+            payload["part_id"],
+            payload["health_score"],
+            payload["risk_level"],
+            payload["stock_gap"],
+            payload["supplier_risk"],
+            payload["recommendation"]
+        )
+    )
