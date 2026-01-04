@@ -10,8 +10,15 @@ CREATE TABLE IF NOT EXISTS suppliers (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE suppliers
-ADD CONSTRAINT unique_supplier_name UNIQUE (name);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'unique_supplier_name'
+    ) THEN
+        ALTER TABLE suppliers
+        ADD CONSTRAINT unique_supplier_name UNIQUE (name);
+    END IF;
+END $$;
 
 -- Parts
 CREATE TABLE IF NOT EXISTS parts (
@@ -24,8 +31,15 @@ CREATE TABLE IF NOT EXISTS parts (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE parts
-ADD CONSTRAINT unique_part_name UNIQUE (name);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'unique_part_name'
+    ) THEN
+        ALTER TABLE parts
+        ADD CONSTRAINT unique_part_name UNIQUE (name);
+    END IF;
+END $$;
 
 -- Supplier ↔ Parts
 CREATE TABLE IF NOT EXISTS supplier_parts (
@@ -33,7 +47,6 @@ CREATE TABLE IF NOT EXISTS supplier_parts (
     part_id INT REFERENCES parts(id),
     PRIMARY KEY (supplier_id, part_id)
 );
-
 
 -- Inventory
 CREATE TABLE IF NOT EXISTS inventory (
@@ -45,10 +58,17 @@ CREATE TABLE IF NOT EXISTS inventory (
     last_updated TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE inventory
-ADD CONSTRAINT unique_inventory_part UNIQUE (part_id);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'unique_inventory_part'
+    ) THEN
+        ALTER TABLE inventory
+        ADD CONSTRAINT unique_inventory_part UNIQUE (part_id);
+    END IF;
+END $$;
 
--- Vehicles available
+-- Vehicles
 CREATE TABLE IF NOT EXISTS vehicles (
     id SERIAL PRIMARY KEY,
     vehicle_make TEXT,
@@ -56,6 +76,7 @@ CREATE TABLE IF NOT EXISTS vehicles (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
+-- Trips
 CREATE TABLE IF NOT EXISTS trips (
     id SERIAL PRIMARY KEY,
     vehicle_id INT REFERENCES vehicles(id),
@@ -71,9 +92,18 @@ CREATE TABLE IF NOT EXISTS trips (
     created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
 
-ALTER TABLE trips
-ADD CONSTRAINT unique_vehicle_trip UNIQUE (vehicle_id, part_id, trip_status);
+DO $$
+BEGIN
+    IF NOT EXISTS (
+        SELECT 1 FROM pg_constraint WHERE conname = 'unique_vehicle_trip'
+    ) THEN
+        ALTER TABLE trips
+        ADD CONSTRAINT unique_vehicle_trip
+        UNIQUE (vehicle_id, part_id, trip_status);
+    END IF;
+END $$;
 
+-- Inventory Analysis
 CREATE TABLE IF NOT EXISTS inventory_analysis (
     id SERIAL PRIMARY KEY,
     part_id INT REFERENCES parts(id),
@@ -84,4 +114,3 @@ CREATE TABLE IF NOT EXISTS inventory_analysis (
     recommendation TEXT,
     analyzed_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
 );
-

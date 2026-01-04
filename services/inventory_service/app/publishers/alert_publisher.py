@@ -34,17 +34,6 @@ def publish_replenishment(part_id, part):
         }
     )
 
-    # Trigger route planning
-    publish_event(
-        "trip.route.requested",
-        "AUTO_REPLENISH_ROUTE_REQUESTED",
-        {
-            "part_id": part_id,
-            "quantity": part["minimum_required"] * 2,
-            "priority": "HIGH"
-        }
-    )
-
 def publish_inventory_db_update(part_id, part):
     publish_event(
         "inventory.db.update",
