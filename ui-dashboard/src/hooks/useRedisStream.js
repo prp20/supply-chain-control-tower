@@ -1,6 +1,25 @@
 import { useEffect, useRef, useCallback } from 'react';
 
-export const useRedisStream = (onStreamEvent, streamPatterns = []) => {
+/**
+ * Custom hook for subscribing to Redis streams via WebSocket
+ * Supports filtering by specific stream names
+ *
+ * @param {Function} onStreamEvent - Callback when message arrives
+ * @param {string[]} streamPatterns - Stream patterns to subscribe to
+ * @param {Function} filterStream - Optional function to filter events by stream name
+ * @returns {Object} - { subscribe, unsubscribe, ws }
+ *
+ * Usage:
+ * const { subscribe } = useRedisStream(
+ *   (data) => {
+ *     if (data.stream === 'decision.events') {
+ *       setDecision(data.data);
+ *     }
+ *   }
+ * );
+ * subscribe('decision.events');
+ */
+export const useRedisStream = (onStreamEvent, streamPatterns = [], filterStream = null) => {
   const wsRef = useRef(null);
   const reconnectTimeoutRef = useRef(null);
   const isConnectingRef = useRef(false);
@@ -30,6 +49,12 @@ export const useRedisStream = (onStreamEvent, streamPatterns = []) => {
     wsRef.current.onmessage = (event) => {
       try {
         const data = JSON.parse(event.data);
+
+        // Apply optional stream filter if provided
+        if (filterStream && !filterStream(data.stream)) {
+          return;
+        }
+
         if (onStreamEvent) {
           onStreamEvent(data);
         }
@@ -52,7 +77,7 @@ export const useRedisStream = (onStreamEvent, streamPatterns = []) => {
         connectWebSocket();
       }, 3000);
     };
-  }, [onStreamEvent]);
+  }, [onStreamEvent, filterStream]);
 
   useEffect(() => {
     connectWebSocket();

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   Box,
   Grid,
@@ -15,6 +15,12 @@ import {
   ListItemIcon,
   ListItemText,
   Chip,
+  FormControlLabel,
+  Switch,
+  Divider,
+  LinearProgress,
+  Tabs,
+  Tab,
 } from '@mui/material';
 import {
   TrendingUp,
@@ -23,8 +29,17 @@ import {
   Lightbulb,
   Psychology,
   Send as SendIcon,
+  History as HistoryIcon,
 } from '@mui/icons-material';
+import ExecutiveDecisionCenter from '../components/ExecutiveDecisionCenter';
+import DecisionTimeline from '../components/DecisionTimeline';
+import WhyPanel from '../components/WhyPanel';
+import LogisticsImpactPanel from '../components/LogisticsImpactPanel';
+import ConfidenceIndicator from '../components/ConfidenceIndicator';
+import { useRedisStream } from '../hooks/useRedisStream';
+import { generateMockDecision, generateMockExplanation } from '../utils/mockDecisionGenerator';
 
+// eslint-disable-next-line no-unused-vars
 const InsightCard = ({ icon: Icon, title, description, severity = 'info' }) => {
   const severityColor = {
     info: '#4facfe',
@@ -84,6 +99,59 @@ const AIAnalysis = () => {
   const [query, setQuery] = useState('');
   const [loading, setLoading] = useState(false);
   const [analysisResults, setAnalysisResults] = useState(null);
+  const [currentDecision, setCurrentDecision] = useState(null);
+  const [decisionHistory, setDecisionHistory] = useState([]); // All decisions
+  const [decisionLoading, setDecisionLoading] = useState(false);
+  const [mockMode, setMockMode] = useState(true);
+  const [showWhyPanel, setShowWhyPanel] = useState(false);
+  const [selectedDecision, setSelectedDecision] = useState(null);
+  const [selectedExplanation, setSelectedExplanation] = useState(null);
+  const [activeTab, setActiveTab] = useState(0); // 0 = latest, 1 = timeline
+
+  // Setup WebSocket listener for decision events
+  const { subscribe } = useRedisStream(
+    (event) => {
+      console.log('📨 Received stream event:', event);
+      
+      if (event.stream === 'decision.events' && event.data) {
+        setCurrentDecision(event.data);
+        setDecisionHistory((prev) => [event.data, ...prev].slice(0, 50)); // Keep last 50
+        setDecisionLoading(false);
+      }
+      
+      if (event.stream === 'decision.explanations' && event.data) {
+        setSelectedExplanation(event.data);
+        setShowWhyPanel(true);
+      }
+    },
+    [],
+    (streamName) => streamName.startsWith('decision.')
+  );
+
+  // Subscribe to decision streams on mount
+  useEffect(() => {
+    subscribe('decision.events');
+    subscribe('decision.explanations');
+  }, [subscribe]);
+
+  // Simulate incoming decision (demo mode)
+  const simulateDecision = () => {
+    setDecisionLoading(true);
+    setTimeout(() => {
+      const mockDecision = generateMockDecision();
+      setCurrentDecision(mockDecision);
+      setDecisionHistory((prev) => [mockDecision, ...prev].slice(0, 50)); // Keep last 50
+      setDecisionLoading(false);
+    }, 1500);
+  };
+
+  // Get explanation for a decision
+  const handleLearnMore = (decision) => {
+    setSelectedDecision(decision);
+    const explanation = generateMockExplanation(decision.decision_id);
+    setSelectedExplanation(explanation);
+    setShowWhyPanel(true);
+  };
 
   const handleAnalyze = async () => {
     if (!query.trim()) return;
@@ -135,11 +203,36 @@ const AIAnalysis = () => {
     <Box sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
       {/* Header Section */}
       <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#DEDEDE' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
-          <Psychology sx={{ fontSize: 32, color: '#667eea' }} />
-          <Typography variant="h4" sx={{ fontWeight: 700 }}>
-            AI-Powered Analysis
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'space-between', mb: 1 }}>
+          <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+            <Psychology sx={{ fontSize: 32, color: '#667eea' }} />
+            <Typography variant="h4" sx={{ fontWeight: 700 }}>
+              AI-Powered Analysis
+            </Typography>
+          </Box>
+          
+          {/* Demo Mode Toggle */}
+          <FormControlLabel
+            control={
+              <Switch
+                checked={mockMode}
+                onChange={(e) => setMockMode(e.target.checked)}
+                sx={{
+                  '& .MuiSwitch-switchBase.Mui-checked': {
+                    color: '#667eea',
+                  },
+                  '& .MuiSwitch-switchBase.Mui-checked + .MuiSwitch-track': {
+                    backgroundColor: '#667eea',
+                  },
+                }}
+              />
+            }
+            label={
+              <Typography variant="body2" sx={{ fontWeight: 600, ml: 1 }}>
+                Show AI Reasoning
+              </Typography>
+            }
+          />
         </Box>
         <Typography color="textSecondary" variant="body2">
           Get intelligent insights about your supply chain operations
@@ -148,6 +241,132 @@ const AIAnalysis = () => {
 
       {/* Scrollable Content */}
       <Box sx={{ flex: 1, overflow: 'auto', p: 4, display: 'flex', flexDirection: 'column' }}>
+        {/* Executive Decision Center - Prominent Position */}
+        {mockMode && (
+          <Box sx={{ mb: 4 }}>
+            <ExecutiveDecisionCenter
+              decision={currentDecision}
+              onLearnMore={handleLearnMore}
+              isLoading={decisionLoading}
+            />
+            
+            {/* Demo Controls */}
+            {mockMode && (
+              <Box sx={{ display: 'flex', gap: 2, justifyContent: 'center', mb: 3 }}>
+                <Button
+                  variant="contained"
+                  onClick={simulateDecision}
+                  disabled={decisionLoading}
+                  sx={{
+                    backgroundColor: '#667eea',
+                    '&:hover': {
+                      backgroundColor: '#5568d3',
+                    },
+                  }}
+                >
+                  {decisionLoading ? 'Generating Decision...' : 'Simulate New Decision'}
+                </Button>
+              </Box>
+            )}
+
+            {/* Decision Timeline & History Section */}
+            {decisionHistory.length > 0 && (
+              <Box sx={{ mb: 4 }}>
+                <Paper sx={{ borderRadius: 2 }}>
+                  {/* Tabs */}
+                  <Tabs
+                    value={activeTab}
+                    onChange={(e, newValue) => setActiveTab(newValue)}
+                    sx={{
+                      borderBottom: '1px solid #DEDEDE',
+                      background: '#F9F9F9',
+                    }}
+                  >
+                    <Tab
+                      label="Latest Decision"
+                      sx={{ fontWeight: 600, color: '#667eea' }}
+                    />
+                    <Tab
+                      icon={<HistoryIcon sx={{ mr: 1 }} />}
+                      label={`Decision History (${decisionHistory.length})`}
+                      iconPosition="start"
+                      sx={{ fontWeight: 600, color: '#667eea' }}
+                    />
+                  </Tabs>
+
+                  {/* Tab Content */}
+                  <Box sx={{ p: 3 }}>
+                    {activeTab === 0 ? (
+                      // Latest Decision Tab
+                      currentDecision ? (
+                        <Box>
+                          <Typography variant="h6" sx={{ fontWeight: 700, mb: 2, color: '#667eea' }}>
+                            Most Recent Decision
+                          </Typography>
+                          <DecisionTimeline
+                            decisions={[currentDecision]}
+                            onSelectDecision={handleLearnMore}
+                            selectedDecisionId={selectedDecision?.decision_id}
+                          />
+
+                          {/* Confidence Indicator - Ring Variant */}
+                          <Box sx={{ mt: 3, mb: 3 }}>
+                            <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 2, color: '#333' }}>
+                              Decision Confidence
+                            </Typography>
+                            <Box sx={{ display: 'flex', gap: 3, alignItems: 'flex-start', flexWrap: 'wrap' }}>
+                              <Box sx={{ flex: '0 0 auto' }}>
+                                <ConfidenceIndicator
+                                  confidence={currentDecision.confidence}
+                                  variant="ring"
+                                  size="medium"
+                                />
+                              </Box>
+                              <Box sx={{ flex: '1 1 300px' }}>
+                                <ConfidenceIndicator
+                                  confidence={currentDecision.confidence}
+                                  variant="detailed"
+                                  size="medium"
+                                />
+                              </Box>
+                            </Box>
+                          </Box>
+
+                          {/* Logistics Impact Panel */}
+                          <Box sx={{ mt: 3 }}>
+                            <LogisticsImpactPanel
+                              decision={currentDecision}
+                              onDrillDown={(metric) => {
+                                console.log('Drilling down into metric:', metric);
+                              }}
+                            />
+                          </Box>
+                        </Box>
+                      ) : (
+                        <Typography color="textSecondary" sx={{ textAlign: 'center', py: 4 }}>
+                          No decisions yet. Generate one to get started!
+                        </Typography>
+                      )
+                    ) : (
+                      // Timeline Tab
+                      <Box>
+                        <Typography variant="h6" sx={{ fontWeight: 700, mb: 3, color: '#667eea' }}>
+                          All Decisions
+                        </Typography>
+                        <DecisionTimeline
+                          decisions={decisionHistory}
+                          onSelectDecision={handleLearnMore}
+                          selectedDecisionId={selectedDecision?.decision_id}
+                        />
+                      </Box>
+                    )}
+                  </Box>
+                </Paper>
+              </Box>
+            )}
+          </Box>
+        )}
+
         <Grid container spacing={4} sx={{ height: 'fit-content' }}>
           {/* Query Section - Left Sidebar */}
           <Grid item xs={12} lg={5} xl={4}>
@@ -352,6 +571,80 @@ const AIAnalysis = () => {
                   </Paper>
                 </Box>
 
+                {/* Confidence Indicators Showcase */}
+                <Box sx={{ mt: 3 }}>
+                  <Typography variant="h6" sx={{ mb: 2.5, fontWeight: 700, color: '#667eea' }}>
+                    🎯 Confidence Metrics
+                  </Typography>
+                  <Paper sx={{ background: '#F9F9F9', border: '1px solid #DEDEDE', p: 2.5 }}>
+                    <Grid container spacing={2}>
+                      <Grid item xs={12} sm={6}>
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 1, color: '#667eea' }}>
+                            Linear Progress Variant
+                          </Typography>
+                          <ConfidenceIndicator
+                            confidence={0.88}
+                            variant="linear"
+                            size="medium"
+                            showLabel
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 1, color: '#667eea' }}>
+                            Circular Progress Variant
+                          </Typography>
+                          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <ConfidenceIndicator
+                              confidence={0.88}
+                              variant="circular"
+                              size="large"
+                            />
+                          </Box>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 1, color: '#667eea' }}>
+                            Badge/Chip Variant
+                          </Typography>
+                          <ConfidenceIndicator
+                            confidence={0.88}
+                            variant="badge"
+                            size="medium"
+                          />
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12} sm={6}>
+                        <Box sx={{ mb: 2 }}>
+                          <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 1, color: '#667eea' }}>
+                            Ring Variant
+                          </Typography>
+                          <Box sx={{ display: 'flex', justifyContent: 'center' }}>
+                            <ConfidenceIndicator
+                              confidence={0.88}
+                              variant="ring"
+                              size="medium"
+                            />
+                          </Box>
+                        </Box>
+                      </Grid>
+                      <Grid item xs={12}>
+                        <Typography variant="caption" sx={{ fontWeight: 600, display: 'block', mb: 1, color: '#667eea' }}>
+                          Detailed Card Variant
+                        </Typography>
+                        <ConfidenceIndicator
+                          confidence={0.88}
+                          variant="detailed"
+                          size="medium"
+                        />
+                      </Grid>
+                    </Grid>
+                  </Paper>
+                </Box>
+
                 <Button
                   fullWidth
                   variant="outlined"
@@ -363,6 +656,7 @@ const AIAnalysis = () => {
                       backgroundColor: 'rgba(102, 126, 234, 0.1)',
                       borderColor: '#764ba2',
                     },
+                    mt: 2,
                   }}
                   onClick={() => {
                     setAnalysisResults(null);
@@ -376,6 +670,14 @@ const AIAnalysis = () => {
           </Grid>
         </Grid>
       </Box>
+
+      {/* Why Panel - Enhanced Explanation Modal */}
+      <WhyPanel
+        decision={selectedDecision}
+        explanation={selectedExplanation}
+        isOpen={showWhyPanel}
+        onClose={() => setShowWhyPanel(false)}
+      />
     </Box>
   );
 };
