@@ -1,189 +1,139 @@
-# 🚗 Supply Chain Control Tower – AI Powered
 
-A **real-time, AI-driven supply chain monitoring system** built using:
+# AutoPulse – Autonomous Supply Chain Control Tower
 
-* 🧠 Agentic AI (LangGraph + Groq LLM)
-* ⚡ Event Streaming (Redis Streams)
-* 📦 Inventory & Supply Tracking
-* 📊 Prediction Engine
-* 🌐 React Dashboard
-* 🐳 Fully Dockerized Microservices
+AutoPulse is an end-to-end **AI-driven Supply Chain Control Tower** designed for real-time logistics visibility, predictive inventory intelligence, and autonomous decision-making.
+
+Built as a **microservices + event-driven + agentic AI** system, AutoPulse demonstrates how modern enterprises can move from reactive firefighting to proactive, intelligent operations.
 
 ---
 
-## 📌 Architecture Overview
+## 🧠 Core Vision
 
-```
-┌──────────────┐
-│  React UI    │
-│ (Dashboard)  │
-└──────┬───────┘
-       │
-       ▼
-┌──────────────┐
-│ API Gateway  │
-└──────┬───────┘
-       │
- ┌─────┴───────────────┐
- │                     │
- ▼                     ▼
-Prediction Service   Agent Service
-(ML + Redis)         (LangGraph + LLM)
- │                     │
- └─────────┬───────────┘
-           ▼
-      Redis Streams
-           │
-           ▼
-     Event Generator
-```
+> *“From raw signals → real-time intelligence → autonomous decisions.”*
+
+AutoPulse continuously ingests live operational events, reasons over them using multi-agent AI workflows, and delivers actionable insights through real-time dashboards.
 
 ---
 
-## ⚙️ Tech Stack
+## 🏗️ High-Level Architecture
 
-| Layer     | Technology       |
-| --------- | ---------------- |
-| UI        | React + Nginx    |
-| Backend   | FastAPI          |
-| AI        | LangGraph + Groq |
-| Streaming | Redis Streams    |
-| DB        | PostgreSQL       |
-| Infra     | Docker + Compose |
+- **PostgreSQL** – System of record
+- **Redis Streams** – Event backbone
+- **FastAPI API Gateway** – Unified control plane
+- **React + Leaflet UI** – Real-time visualization
+- **LangGraph + LangChain + Groq LLM** – Agentic AI brain
 
 ---
 
-## 📂 Folder Structure
+## 🔧 Services Overview
 
-```
-.
-├── docker-compose.yml
-├── services/
-│   ├── api-gateway/
-│   ├── prediction-service/
-│   ├── agent-service/
-│   ├── event-generator/
-│   └── data-service/
-│
-├── ui/
-│   └── control-tower-ui/
-│
-└── infra/
-    └── postgres/
-```
+### 1. Data Ingestion Service
+Simulates real-world signals:
+- Vehicle GPS telemetry
+- Traffic disruptions
+- News & weather events
+- Inventory consumption
+
+### 2. Route Planner Service
+- OSRM-based routing
+- ETA adjustment & delay prediction
+- Dynamic rerouting intelligence
+
+### 3. Inventory Intelligence Service
+- Stock tracking & safety thresholds
+- Health scoring & risk classification
+- Replenishment recommendations
+
+### 4. Persist Database Service
+- Event-driven database updates
+- Idempotent stream handling
+- Analytics persistence
+
+### 5. API Gateway
+- REST APIs for dashboards
+- WebSocket streaming for live updates
+- Unified data aggregation layer
+
+### 6. Master Brain Service (Agentic AI)
+- Inventory Agent
+- Logistics Agent
+- Risk Correlation Agent
+- Executive Decision Agent (Groq LLM)
+
+Built using **LangGraph** for structured, explainable reasoning workflows.
 
 ---
 
-## 🚀 How to Run the System
+## 🔁 Event-Driven Backbone (Redis Streams)
 
-### 1️⃣ Prerequisites
+Examples:
+- `vehicle.events`
+- `route.plan.created`
+- `route.status.updated`
+- `inventory.health.updated`
+- `decision.events`
 
-* Docker
-* Docker Compose
-* Git
-
----
-
-### 2️⃣ Clone Repo
-
-```bash
-git clone https://github.com/<your-username>/supply-chain-control-tower.git
-cd supply-chain-control-tower
-```
+All services communicate asynchronously through Redis Streams for scalability and resilience.
 
 ---
 
-### 3️⃣ Start Everything
+## 🧠 Agentic AI Highlights
+
+- Memory-based reasoning window
+- Multi-agent collaboration
+- Deterministic + probabilistic decisions
+- Executive-grade explanations
+- Fully explainable AI decisions
+
+---
+
+## 🖥️ Frontend (React + Leaflet)
+
+Key dashboards:
+- Live vehicle movement
+- Trip status & delays
+- Inventory health heatmaps
+- Risk alerts & recommendations
+- AI-generated executive insights
+
+---
+
+## 🚀 How to Run
 
 ```bash
 docker-compose up --build
 ```
 
----
-
-### 4️⃣ Access Services
-
-| Service        | URL                                                                        |
-| -------------- | -------------------------------------------------------------------------- |
-| UI             | [http://localhost:3000](http://localhost:3000)                             |
-| API Gateway    | [http://localhost:8000](http://localhost:8000)                             |
-| Prediction API | [http://localhost:8000/control-tower](http://localhost:8000/control-tower) |
-| Agent Health   | [http://localhost:8000/health](http://localhost:8000/health)               |
+Services will be available at:
+- API Gateway: http://localhost:8000
+- UI Dashboard: http://localhost:3000
 
 ---
 
-## 🧠 AI Capabilities
+## 🏆 Why AutoPulse Stands Out
 
-### ✔ Real-time Event Processing
-
-* Vehicle telemetry
-* Shipment delays
-* Inventory changes
-
-### ✔ Prediction Engine
-
-* Rolling risk score
-* Delay forecasting
-* Inventory impact
-
-### ✔ Agentic AI
-
-* Uses LangGraph
-* Groq LLM (Llama-3)
-* Autonomous decision making
-* Outputs:
-
-  * Risk Level
-  * Action
-  * Explanation
+- True **agentic AI**, not rule engines
+- End-to-end real-time visibility
+- Production-grade architecture
+- Highly extensible
+- Hackathon-ready & enterprise-aligned
 
 ---
 
-## 🔁 Event Flow
+## 📌 Future Enhancements
 
-```
-Event Generator → Redis Stream
-      ↓
-Prediction Engine
-      ↓
-Agent Brain
-      ↓
-UI Dashboard
-```
+- Autonomous procurement execution
+- Long-horizon demand forecasting
+- Reinforcement learning for routing
+- Multi-region simulation
+- Role-based UI views
 
 ---
 
-## 📊 Example API Response
+## 👨‍💻 Author
 
-```json
-{
-  "risk_score": 0.67,
-  "risk_level": "HIGH",
-  "avg_delay_minutes": 12.5,
-  "decision": "Increase buffer stock and reroute shipments"
-}
-```
+Designed & built as a **future-ready autonomous operations platform** showcasing modern AI-driven system design.
 
 ---
 
-## 🧠 Future Enhancements
-
-* ✅ WebSocket live updates
-* 📍 GPS map tracking
-* 📦 Supplier risk scoring
-* 📈 Grafana dashboard
-* 🤖 Multi-agent negotiation
-* 🧠 Model retraining
-
----
-
-## 🧑‍💻 Author
-
-Built by **[Your Name]**
-AI + Supply Chain Systems Architect
-
----
-
-## ⭐ Star This Repo
-
-If this helped you — give it a ⭐ on GitHub!
+*AutoPulse — Where Supply Chains Think Ahead.*
