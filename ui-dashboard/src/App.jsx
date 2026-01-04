@@ -13,70 +13,128 @@ import './App.css';
 
 const theme = createTheme({
   palette: {
-    mode: 'dark',
+    mode: 'light',
     primary: {
-      main: '#667eea',
-      light: '#8b9fff',
-      dark: '#4a5cc8',
+      main: '#EB8C00', // Tangerine/Orange
+      light: '#F5A623',
+      dark: '#D67800',
     },
     secondary: {
-      main: '#764ba2',
+      main: '#FFB600', // Yellow
+      light: '#FFD54F',
+      dark: '#E0A000',
     },
     success: {
-      main: '#43e97b',
+      main: '#10b981',
     },
     warning: {
-      main: '#fa709a',
+      main: '#F59E0B',
     },
     error: {
-      main: '#ff6b6b',
+      main: '#E0301E', // Red
     },
     info: {
-      main: '#4facfe',
+      main: '#EB8C00',
     },
     background: {
-      default: '#0f1419',
-      paper: '#1a1f2e',
+      default: '#FFFFFF', // White background
+      paper: '#F9F9F9', // Very light grey paper
     },
     text: {
-      primary: '#e3e6f0',
-      secondary: '#a0a3b0',
+      primary: '#000000', // Black text
+      secondary: '#464646', // Medium Grey
     },
   },
   typography: {
-    fontFamily: '"Roboto", "Helvetica", "Arial", sans-serif',
+    fontFamily: '"Segoe UI", "Roboto", "Helvetica", "Arial", sans-serif',
     h4: {
       fontWeight: 700,
-      letterSpacing: '0.5px',
+      letterSpacing: '0.3px',
+      color: '#000000',
     },
     h6: {
       fontWeight: 600,
+      color: '#2D2D2D',
+    },
+    h5: {
+      fontWeight: 700,
+      color: '#000000',
+    },
+    body1: {
+      color: '#2D2D2D',
+    },
+    body2: {
+      color: '#464646',
     },
     button: {
       textTransform: 'none',
       fontWeight: 600,
+      letterSpacing: '0.3px',
     },
   },
   components: {
+    MuiTableCell: {
+      styleOverrides: {
+        head: {
+          backgroundColor: '#F9F9F9',
+          fontWeight: 700,
+          color: '#EB8C00',
+          borderColor: '#DEDEDE',
+          paddingTop: '12px',
+          paddingBottom: '12px',
+        },
+        body: {
+          color: '#2D2D2D',
+          borderColor: '#F0F0F0',
+          paddingTop: '10px',
+          paddingBottom: '10px',
+        },
+      },
+    },
     MuiButton: {
       styleOverrides: {
         root: {
           textTransform: 'none',
           fontWeight: 600,
           borderRadius: '8px',
+          boxShadow: 'none',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
         },
         contained: {
-          boxShadow: '0 4px 12px rgba(102, 126, 234, 0.3)',
+          backgroundColor: '#EB8C00',
+          color: '#FFFFFF',
           '&:hover': {
-            boxShadow: '0 8px 16px rgba(102, 126, 234, 0.4)',
+            backgroundColor: '#D67800',
+            boxShadow: '0 4px 12px rgba(235, 140, 0, 0.3)',
+            transform: 'translateY(-2px)',
           },
+        },
+        outlined: {
+          borderColor: '#EB8C00',
+          color: '#EB8C00',
+          '&:hover': {
+            borderColor: '#D67800',
+            backgroundColor: 'rgba(235, 140, 0, 0.05)',
+          },
+        },
+      },
+    },
+    MuiChip: {
+      styleOverrides: {
+        root: {
+          fontWeight: 600,
+          borderRadius: '6px',
+        },
+        filled: {
+          backgroundColor: '#F0F0F0',
+          color: '#2D2D2D',
         },
       },
     },
     MuiAppBar: {
       styleOverrides: {
         root: {
-          boxShadow: '0 2px 8px rgba(0,0,0,0.3)',
+          boxShadow: '0 2px 8px rgba(0,0,0,0.08)',
         },
       },
     },
@@ -84,8 +142,13 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '12px',
-          backgroundColor: '#1a1f2e',
-          border: '1px solid #2a3142',
+          backgroundColor: '#FFFFFF',
+          border: '1px solid #DEDEDE',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
+          transition: 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)',
+          '&:hover': {
+            boxShadow: '0 4px 12px rgba(235, 140, 0, 0.12)',
+          },
         },
       },
     },
@@ -93,8 +156,9 @@ const theme = createTheme({
       styleOverrides: {
         root: {
           borderRadius: '12px',
-          backgroundColor: '#1a1f2e',
-          border: '1px solid #2a3142',
+          backgroundColor: '#F9F9F9',
+          border: '1px solid #DEDEDE',
+          boxShadow: '0 1px 3px rgba(0,0,0,0.06), 0 1px 2px rgba(0,0,0,0.04)',
         },
       },
     },
@@ -123,8 +187,8 @@ function App() {
             sx={{
               flex: 1,
               mt: '64px',
-              ml: { xs: 0, md: `${DRAWER_WIDTH}px` },
-              backgroundColor: '#f5f5f5',
+              ml: { xs: 0, md: 0 },
+              backgroundColor: '#FFFFFF',
               minHeight: 'calc(100vh - 64px)',
             }}
           >

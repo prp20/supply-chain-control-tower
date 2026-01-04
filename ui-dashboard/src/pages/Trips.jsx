@@ -106,8 +106,8 @@ const Trips = () => {
   return (
     <Box sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
       {/* Header Section */}
-      <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#2a3142' }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+      <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#DEDEDE', backgroundColor: '#FFFFFF' }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#000000' }}>
           Trips Management
         </Typography>
         <Typography color="textSecondary" variant="body2">
@@ -129,7 +129,7 @@ const Trips = () => {
             <Grid item xs={12} sm={6} md={5} lg={2.4}>
               <Card
                 sx={{
-                  background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+                  background: 'linear-gradient(135deg, #EB8C00 0%, #FFB600 100%)',
                   color: 'white',
                 }}
               >
@@ -201,8 +201,8 @@ const Trips = () => {
             sx={{
               p: 2,
               mb: 3,
-              background: '#1a1f2e',
-              border: '1px solid #2a3142',
+              background: '#F9F9F9',
+              border: '1px solid #DEDEDE',
             }}
           >
             <TextField
@@ -215,8 +215,8 @@ const Trips = () => {
               }}
               sx={{
                 '& .MuiOutlinedInput-root': {
-                  backgroundColor: '#252d3d',
-                  color: '#e3e6f0',
+                  backgroundColor: '#F0F0F0',
+                  color: '#000000',
                 },
               }}
             />
@@ -226,19 +226,19 @@ const Trips = () => {
           <TableContainer
             component={Paper}
             sx={{
-              background: '#1a1f2e',
-              border: '1px solid #2a3142',
+              background: '#F9F9F9',
+              border: '1px solid #DEDEDE',
             }}
           >
             <Table>
               <TableHead>
-                <TableRow sx={{ backgroundColor: '#0f1419' }}>
-                  <TableCell sx={{ fontWeight: 700, color: '#667eea' }}>Trip ID</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: '#667eea' }}>Route</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: '#667eea' }}>Qty</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: '#667eea' }}>Cost</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: '#667eea' }}>Status</TableCell>
-                  <TableCell sx={{ fontWeight: 700, color: '#667eea' }} align="right">
+                <TableRow sx={{ backgroundColor: '#FFFFFF' }}>
+                  <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }}>Trip ID</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }}>Route</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }}>Qty</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }}>Cost</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }}>Status</TableCell>
+                  <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }} align="right">
                     Action
                   </TableCell>
                 </TableRow>
@@ -249,11 +249,11 @@ const Trips = () => {
                     <TableRow
                       key={trip.id}
                       sx={{
-                        '&:hover': { backgroundColor: '#252d3d' },
+                        '&:hover': { backgroundColor: '#F0F0F0' },
                         transition: 'all 0.2s ease',
                       }}
                     >
-                      <TableCell sx={{ fontWeight: 600, color: '#667eea' }}>
+                      <TableCell sx={{ fontWeight: 600, color: '#EB8C00' }}>
                         {trip.trip_id}
                       </TableCell>
                       <TableCell>{trip.origin} → {trip.destination}</TableCell>
@@ -275,8 +275,8 @@ const Trips = () => {
                           startIcon={<MapIcon />}
                           onClick={() => handleSelectTrip(trip)}
                           sx={{
-                            color: '#667eea',
-                            borderColor: '#667eea',
+                            color: '#EB8C00',
+                            borderColor: '#EB8C00',
                             '&:hover': {
                               backgroundColor: 'rgba(102, 126, 234, 0.1)',
                             },

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import {
   Drawer,
   List,
@@ -11,6 +11,7 @@ import {
   useTheme,
   useMediaQuery,
   Typography,
+  Tooltip,
 } from '@mui/material';
 import {
   Dashboard,
@@ -19,12 +20,16 @@ import {
   SmartToy,
   Settings,
   Home,
+  ChevronLeft,
+  ChevronRight,
 } from '@mui/icons-material';
 import { useNavigate, useLocation } from 'react-router-dom';
 
 const DRAWER_WIDTH = 280;
+const COLLAPSED_WIDTH = 80;
 
 const Sidebar = ({ open, onClose }) => {
+  const [collapsed, setCollapsed] = useState(false);
   const navigate = useNavigate();
   const location = useLocation();
   const theme = useTheme();
@@ -55,65 +60,86 @@ const Sidebar = ({ open, onClose }) => {
       {/* Logo Section */}
       <Box
         sx={{
-          p: 2.5,
-          background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-          color: 'white',
+          p: collapsed ? 1.5 : 2.5,
+          background: '#EB8C00', // Tangerine/Orange
+          color: '#FFFFFF',
           textAlign: 'center',
+          borderRadius: '0',
+          overflow: 'hidden',
+          minHeight: collapsed ? 80 : 'auto',
+          display: 'flex',
+          alignItems: 'center',
+          justifyContent: 'center',
         }}
       >
-        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: 1, mb: 1 }}>
-          <Home sx={{ fontSize: 28 }} />
-          <Typography variant="h6" sx={{ fontWeight: 700 }}>
-            Supply Chain
-          </Typography>
+        <Box sx={{ display: 'flex', alignItems: 'center', justifyContent: 'center', gap: collapsed ? 0 : 1 }}>
+          <Tooltip title={collapsed ? 'AutoPulse' : ''} placement="right">
+            <Home sx={{ fontSize: 28 }} />
+          </Tooltip>
+          {!collapsed && (
+            <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'flex-start' }}>
+              <Typography variant="h6" sx={{ fontWeight: 700, lineHeight: 1.2 }}>
+                AutoPulse
+              </Typography>
+              <Typography variant="caption" sx={{ fontSize: '0.65rem', opacity: 0.95, fontStyle: 'italic' }}>
+                Supply Chain OS
+              </Typography>
+            </Box>
+          )}
         </Box>
-        <Typography variant="caption" sx={{ opacity: 0.8 }}>
-          v1.0.0
-        </Typography>
       </Box>
 
       <Divider />
 
       {/* Main Menu */}
-      <List sx={{ flex: 1, pt: 2, px: 1 }}>
+      <List sx={{ flex: 1, pt: 2, px: collapsed ? 0.5 : 1 }}>
         {menuItems.map((item) => (
-          <ListItem key={item.path} disablePadding sx={{ mb: 0.5 }}>
-            <ListItemButton
-              selected={isActive(item.path)}
-              onClick={() => handleNavigate(item.path)}
-              sx={{
-                borderRadius: '8px',
-                mb: 0.5,
-                '&.Mui-selected': {
-                  backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                  color: '#667eea',
-                  '& .MuiListItemIcon-root': {
-                    color: '#667eea',
-                  },
-                  fontWeight: 600,
-                },
-                '&:hover': {
-                  backgroundColor: 'rgba(102, 126, 234, 0.05)',
-                },
-                transition: 'all 0.3s ease',
-              }}
-            >
-              <ListItemIcon
+          <ListItem key={item.path} disablePadding sx={{ mb: 0.5, justifyContent: collapsed ? 'center' : 'flex-start' }}>
+            <Tooltip title={collapsed ? item.label : ''} placement="right">
+              <ListItemButton
+                selected={isActive(item.path)}
+                onClick={() => handleNavigate(item.path)}
                 sx={{
-                  minWidth: 40,
-                  color: isActive(item.path) ? '#667eea' : 'inherit',
+                  borderRadius: '0',
+                  mb: 0.5,
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  px: collapsed ? 1 : 2,
+                  '&.Mui-selected': {
+                    backgroundColor: 'rgba(235, 140, 0, 0.15)',
+                    color: '#EB8C00',
+                    '& .MuiListItemIcon-root': {
+                      color: '#EB8C00',
+                    },
+                    fontWeight: 600,
+                    borderLeft: collapsed ? 'none' : '4px solid #EB8C00',
+                    paddingLeft: collapsed ? 'auto' : 'calc(16px - 4px)',
+                  },
+                  '&:hover': {
+                    backgroundColor: 'rgba(235, 140, 0, 0.08)',
+                  },
+                  transition: 'all 0.3s ease',
                 }}
               >
-                {item.icon}
-              </ListItemIcon>
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  variant: 'body2',
-                  fontWeight: isActive(item.path) ? 600 : 500,
-                }}
-              />
-            </ListItemButton>
+                <ListItemIcon
+                  sx={{
+                    minWidth: collapsed ? 'auto' : 40,
+                    color: isActive(item.path) ? '#EB8C00' : 'inherit',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                {!collapsed && (
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      variant: 'body2',
+                      fontWeight: isActive(item.path) ? 600 : 500,
+                    }}
+                  />
+                )}
+              </ListItemButton>
+            </Tooltip>
           </ListItem>
         ))}
       </List>
@@ -121,46 +147,83 @@ const Sidebar = ({ open, onClose }) => {
       <Divider sx={{ my: 2 }} />
 
       {/* Settings Menu */}
-      <List sx={{ px: 1, pb: 2 }}>
+      <List sx={{ px: collapsed ? 0.5 : 1, pb: 2 }}>
         {settingsItems.map((item) => (
-          <ListItem key={item.path} disablePadding>
-            <ListItemButton
-              selected={isActive(item.path)}
-              onClick={() => handleNavigate(item.path)}
-              sx={{
-                borderRadius: '8px',
-                '&.Mui-selected': {
-                  backgroundColor: 'rgba(102, 126, 234, 0.1)',
-                  color: '#667eea',
-                  '& .MuiListItemIcon-root': {
-                    color: '#667eea',
+          <ListItem key={item.path} disablePadding sx={{ mb: 0.5, justifyContent: collapsed ? 'center' : 'flex-start' }}>
+            <Tooltip title={collapsed ? item.label : ''} placement="right">
+              <ListItemButton
+                selected={isActive(item.path)}
+                onClick={() => handleNavigate(item.path)}
+                sx={{
+                  borderRadius: '0',
+                  justifyContent: collapsed ? 'center' : 'flex-start',
+                  px: collapsed ? 1 : 2,
+                  '&.Mui-selected': {
+                    backgroundColor: 'rgba(235, 140, 0, 0.15)',
+                    color: '#EB8C00',
+                    '& .MuiListItemIcon-root': {
+                      color: '#EB8C00',
+                    },
+                    fontWeight: 600,
+                    borderLeft: collapsed ? 'none' : '4px solid #EB8C00',
+                    paddingLeft: collapsed ? 'auto' : 'calc(16px - 4px)',
                   },
-                  fontWeight: 600,
-                },
+                  '&:hover': {
+                    backgroundColor: 'rgba(235, 140, 0, 0.08)',
+                  },
+                  transition: 'all 0.3s ease',
+                }}
+              >
+                <ListItemIcon
+                  sx={{
+                    minWidth: collapsed ? 'auto' : 40,
+                    color: isActive(item.path) ? '#EB8C00' : 'inherit',
+                    justifyContent: 'center',
+                  }}
+                >
+                  {item.icon}
+                </ListItemIcon>
+                {!collapsed && (
+                  <ListItemText
+                    primary={item.label}
+                    primaryTypographyProps={{
+                      variant: 'body2',
+                      fontWeight: isActive(item.path) ? 600 : 500,
+                    }}
+                  />
+                )}
+              </ListItemButton>
+            </Tooltip>
+          </ListItem>
+        ))}
+
+        {/* Collapse Toggle Button - Desktop only */}
+        <Divider sx={{ my: 1 }} />
+        <ListItem disablePadding sx={{ display: { xs: 'none', md: 'block' }, justifyContent: collapsed ? 'center' : 'flex-start' }}>
+          <Tooltip title={collapsed ? 'Expand' : 'Collapse'} placement="right">
+            <ListItemButton
+              onClick={() => setCollapsed(!collapsed)}
+              sx={{
+                borderRadius: '0',
+                justifyContent: collapsed ? 'center' : 'flex-start',
+                px: collapsed ? 1 : 2,
                 '&:hover': {
-                  backgroundColor: 'rgba(102, 126, 234, 0.05)',
+                  backgroundColor: 'rgba(0, 0, 0, 0.04)',
                 },
-                transition: 'all 0.3s ease',
               }}
             >
               <ListItemIcon
                 sx={{
-                  minWidth: 40,
-                  color: isActive(item.path) ? '#667eea' : 'inherit',
+                  minWidth: collapsed ? 'auto' : 40,
+                  justifyContent: 'center',
+                  color: '#666',
                 }}
               >
-                {item.icon}
+                {collapsed ? <ChevronRight fontSize="small" /> : <ChevronLeft fontSize="small" />}
               </ListItemIcon>
-              <ListItemText
-                primary={item.label}
-                primaryTypographyProps={{
-                  variant: 'body2',
-                  fontWeight: isActive(item.path) ? 600 : 500,
-                }}
-              />
             </ListItemButton>
-          </ListItem>
-        ))}
+          </Tooltip>
+        </ListItem>
       </List>
     </Box>
   );
@@ -175,26 +238,30 @@ const Sidebar = ({ open, onClose }) => {
         sx={{
           display: { xs: 'block', md: 'none' },
           '& .MuiDrawer-paper': {
-            width: DRAWER_WIDTH,
+            width: collapsed ? COLLAPSED_WIDTH : DRAWER_WIDTH,
             boxSizing: 'border-box',
+            zIndex: 1400,
+            transition: 'width 0.3s ease',
           },
         }}
       >
         {drawerContent}
       </Drawer>
 
-      {/* Desktop drawer */}
+      {/* Desktop drawer - now collapsible and spans over navbar */}
       <Drawer
         anchor="left"
-        variant="permanent"
-        open
+        variant="temporary"
+        open={open}
+        onClose={onClose}
         sx={{
           display: { xs: 'none', md: 'block' },
           '& .MuiDrawer-paper': {
-            width: DRAWER_WIDTH,
+            width: collapsed ? COLLAPSED_WIDTH : DRAWER_WIDTH,
             boxSizing: 'border-box',
-            mt: '64px',
+            zIndex: 1400,
             borderRight: '1px solid #f0f0f0',
+            transition: 'width 0.3s ease',
           },
         }}
       >

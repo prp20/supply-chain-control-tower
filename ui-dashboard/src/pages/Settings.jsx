@@ -53,7 +53,7 @@ const Settings = () => {
   return (
     <Box sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
       {/* Header Section */}
-      <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#2a3142' }}>
+      <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#DEDEDE' }}>
         <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
           ⚙️ Settings
         </Typography>
@@ -86,8 +86,8 @@ const Settings = () => {
           <Card
             sx={{
               mb: 3,
-              background: '#1a1f2e',
-              border: '1px solid #2a3142',
+              background: '#F9F9F9',
+              border: '1px solid #DEDEDE',
             }}
           >
             <CardContent>
@@ -122,8 +122,8 @@ const Settings = () => {
           <Card
             sx={{
               mb: 3,
-              background: '#1a1f2e',
-              border: '1px solid #2a3142',
+              background: '#F9F9F9',
+              border: '1px solid #DEDEDE',
             }}
           >
             <CardContent>

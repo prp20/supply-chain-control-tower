@@ -32,37 +32,55 @@ const Navbar = ({ onMenuToggle }) => {
       position="fixed"
       sx={{
         zIndex: 1300,
-        background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
+        backgroundColor: '#EB8C00', // Tangerine/Orange
         boxShadow: '0 2px 8px rgba(0,0,0,0.1)',
+        width: '100%',
+        borderRadius: '0',
       }}
     >
-      <Toolbar sx={{ justifyContent: 'space-between' }}>
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 2 }}>
-          <IconButton
-            color="inherit"
-            aria-label="menu"
-            onClick={onMenuToggle}
-            sx={{
-              mr: 1,
-              display: { md: 'none' },
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-          <Typography
-            variant="h6"
-            component="div"
-            sx={{
-              fontWeight: 700,
-              fontSize: '1.3rem',
-              letterSpacing: '0.5px',
-            }}
-          >
-            📦 Supply Chain
-          </Typography>
+      <Toolbar sx={{ justifyContent: 'center', position: 'relative' }}>
+        {/* Menu toggle button - left aligned */}
+        <IconButton
+          color="inherit"
+          aria-label="menu"
+          onClick={onMenuToggle}
+          sx={{
+            position: 'absolute',
+            left: 16,
+          }}
+        >
+          <MenuIcon />
+        </IconButton>
+
+        {/* Centered Branding */}
+        <Box sx={{ display: 'flex', flexDirection: 'column', alignItems: 'center' }}>
+            <Typography
+              variant="h6"
+              component="div"
+              sx={{
+                fontWeight: 700,
+                fontSize: '1.3rem',
+                letterSpacing: '0.5px',
+                color: '#FFFFFF',
+              }}
+            >
+              ⚡ AutoPulse
+            </Typography>
+            <Typography
+              variant="caption"
+              sx={{
+                fontSize: '0.7rem',
+                fontStyle: 'italic',
+                color: 'rgba(255,255,255,0.9)',
+                lineHeight: 1,
+              }}
+            >
+              The real-time heartbeat of supply chains
+            </Typography>
         </Box>
 
-        <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
+        {/* Right-aligned controls */}
+        <Box sx={{ position: 'absolute', right: 16, display: 'flex', alignItems: 'center', gap: 1 }}>
           <IconButton color="inherit" size="large">
             <SearchIcon />
           </IconButton>

@@ -37,8 +37,8 @@ const InsightCard = ({ icon: Icon, title, description, severity = 'info' }) => {
     <Card
       sx={{
         mb: 2,
-        background: '#1a1f2e',
-        border: '1px solid #2a3142',
+        background: '#F9F9F9',
+        border: '1px solid #DEDEDE',
         transition: 'all 0.3s ease',
         '&:hover': {
           boxShadow: '0 8px 16px rgba(102, 126, 234, 0.2)',
@@ -57,7 +57,7 @@ const InsightCard = ({ icon: Icon, title, description, severity = 'info' }) => {
             }}
           />
           <Box sx={{ flex: 1 }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, color: '#e3e6f0' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, mb: 0.5, color: '#000000' }}>
               {title}
             </Typography>
             <Typography color="textSecondary" variant="body2" sx={{ mb: 1 }}>
@@ -134,7 +134,7 @@ const AIAnalysis = () => {
   return (
     <Box sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
       {/* Header Section */}
-      <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#2a3142' }}>
+      <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#DEDEDE' }}>
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 0.5 }}>
           <Psychology sx={{ fontSize: 32, color: '#667eea' }} />
           <Typography variant="h4" sx={{ fontWeight: 700 }}>
@@ -207,7 +207,7 @@ const AIAnalysis = () => {
               </Paper>
 
               {/* Quick Queries */}
-              <Paper sx={{ p: 3, background: '#1a1f2e', border: '1px solid #2a3142' }}>
+              <Paper sx={{ p: 3, background: '#F9F9F9', border: '1px solid #DEDEDE' }}>
                 <Typography variant="subtitle2" sx={{ mb: 2, fontWeight: 700, color: '#667eea' }}>
                   💡 Quick Queries
                 </Typography>
@@ -275,8 +275,8 @@ const AIAnalysis = () => {
                 sx={{
                   p: 5,
                   textAlign: 'center',
-                  background: '#1a1f2e',
-                  border: '2px dashed #2a3142',
+                  background: '#F9F9F9',
+                  border: '2px dashed #DEDEDE',
                   borderRadius: 2,
                   minHeight: '400px',
                   display: 'flex',
@@ -333,7 +333,7 @@ const AIAnalysis = () => {
                   <Typography variant="h6" sx={{ mb: 2.5, fontWeight: 700, color: '#667eea' }}>
                     ✅ Recommendations
                   </Typography>
-                  <Paper sx={{ background: '#1a1f2e', border: '1px solid #2a3142' }}>
+                  <Paper sx={{ background: '#F9F9F9', border: '1px solid #DEDEDE' }}>
                     <CardContent>
                       <List sx={{ p: 0 }}>
                         {analysisResults.recommendations.map((rec, idx) => (
@@ -343,7 +343,7 @@ const AIAnalysis = () => {
                             </ListItemIcon>
                             <ListItemText
                               primary={rec}
-                              primaryTypographyProps={{ fontWeight: 500, color: '#e3e6f0' }}
+                              primaryTypographyProps={{ fontWeight: 500, color: '#000000' }}
                             />
                           </ListItem>
                         ))}

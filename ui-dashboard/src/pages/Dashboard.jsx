@@ -39,17 +39,17 @@ import {
 } from 'recharts';
 import { vehiclesAPI, inventoryAPI, tripsAPI } from '../services/api';
 
-const COLORS = ['#667eea', '#764ba2', '#f093fb', '#4facfe'];
+const COLORS = ['#EB8C00', '#FFB600', '#E0301E', '#DB536A'];
 
 const StatCard = ({ title, value, icon: Icon, color, trend, trendValue }) => (
   <Card
     sx={{
       height: '100%',
-      background: '#1a1f2e',
-      border: '1px solid #2a3142',
+      background: '#FFFFFF',
+      border: '1px solid #DEDEDE',
       transition: 'all 0.3s ease',
       '&:hover': {
-        boxShadow: '0 8px 16px rgba(102, 126, 234, 0.2)',
+        boxShadow: '0 8px 16px rgba(235, 140, 0, 0.15)',
         transform: 'translateY(-2px)',
         borderColor: color,
       },
@@ -69,10 +69,10 @@ const StatCard = ({ title, value, icon: Icon, color, trend, trendValue }) => (
       </Box>
       {trend && (
         <Box sx={{ display: 'flex', alignItems: 'center', gap: 1 }}>
-          <TrendingUp sx={{ fontSize: 16, color: trend === 'up' ? '#4caf50' : '#f44336' }} />
+          <TrendingUp sx={{ fontSize: 16, color: trend === 'up' ? '#10b981' : '#E0301E' }} />
           <Typography
             variant="body2"
-            sx={{ color: trend === 'up' ? '#4caf50' : '#f44336', fontWeight: 600 }}
+            sx={{ color: trend === 'up' ? '#10b981' : '#E0301E', fontWeight: 600 }}
           >
             {trend === 'up' ? '+' : '-'}{trendValue}% Last 30 days
           </Typography>
@@ -163,8 +163,8 @@ const Dashboard = () => {
   return (
     <Box sx={{ p: 0, height: '100%', display: 'flex', flexDirection: 'column', bgcolor: 'background.default' }}>
       {/* Header Section */}
-      <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#2a3142' }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5 }}>
+      <Box sx={{ p: 4, pb: 3, borderBottom: '1px solid', borderColor: '#DEDEDE', backgroundColor: '#FFFFFF' }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, mb: 0.5, color: '#000000' }}>
           Dashboard
         </Typography>
         <Typography color="textSecondary" variant="body2">
@@ -189,7 +189,7 @@ const Dashboard = () => {
                   title="Active Vehicles"
                   value={stats.vehicles}
                   icon={LocalShipping}
-                  color="#667eea"
+                  color="#EB8C00"
                   trend="up"
                   trendValue={25}
                 />
@@ -199,7 +199,7 @@ const Dashboard = () => {
                   title="Inventory Items"
                   value={stats.inventory}
                   icon={Inventory}
-                  color="#764ba2"
+                  color="#FFB600"
                   trend="up"
                   trendValue={15}
                 />
@@ -209,7 +209,7 @@ const Dashboard = () => {
                   title="Active Trips"
                   value={stats.trips}
                   icon={DirectionsRun}
-                  color="#f093fb"
+                  color="#E0301E"
                   trend="down"
                   trendValue={8}
                 />
@@ -225,13 +225,13 @@ const Dashboard = () => {
                   </Typography>
                   <ResponsiveContainer width="100%" height={280}>
                     <LineChart data={sessionsData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#2a3142" />
-                      <XAxis dataKey="name" stroke="#a0a3b0" />
-                      <YAxis stroke="#a0a3b0" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#DEDEDE" />
+                      <XAxis dataKey="name" stroke="#464646" />
+                      <YAxis stroke="#464646" />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#1a1f2e',
-                          border: '1px solid #2a3142',
+                          backgroundColor: '#FFFFFF',
+                          border: '1px solid #DEDEDE',
                           borderRadius: '8px',
                         }}
                       />
@@ -239,7 +239,7 @@ const Dashboard = () => {
                       <Line
                         type="monotone"
                         dataKey="sessions"
-                        stroke="#667eea"
+                        stroke="#EB8C00"
                         strokeWidth={2}
                         name="Trips"
                         dot={false}
@@ -247,7 +247,7 @@ const Dashboard = () => {
                       <Line
                         type="monotone"
                         dataKey="users"
-                        stroke="#764ba2"
+                        stroke="#FFB600"
                         strokeWidth={2}
                         name="Vehicles"
                         dot={false}
@@ -264,19 +264,19 @@ const Dashboard = () => {
                   </Typography>
                   <ResponsiveContainer width="100%" height={280}>
                     <BarChart data={pageViewsData}>
-                      <CartesianGrid strokeDasharray="3 3" stroke="#2a3142" />
-                      <XAxis dataKey="month" stroke="#a0a3b0" />
-                      <YAxis stroke="#a0a3b0" />
+                      <CartesianGrid strokeDasharray="3 3" stroke="#DEDEDE" />
+                      <XAxis dataKey="month" stroke="#464646" />
+                      <YAxis stroke="#464646" />
                       <Tooltip
                         contentStyle={{
-                          backgroundColor: '#1a1f2e',
-                          border: '1px solid #2a3142',
+                          backgroundColor: '#FFFFFF',
+                          border: '1px solid #DEDEDE',
                           borderRadius: '8px',
                         }}
                       />
                       <Legend />
-                      <Bar dataKey="views" fill="#667eea" name="Stock Items" radius={[8, 8, 0, 0]} />
-                      <Bar dataKey="downloads" fill="#764ba2" name="Low Stock" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="views" fill="#EB8C00" name="Stock Items" radius={[8, 8, 0, 0]} />
+                      <Bar dataKey="downloads" fill="#FFB600" name="Low Stock" radius={[8, 8, 0, 0]} />
                     </BarChart>
                   </ResponsiveContainer>
                 </Paper>
@@ -313,7 +313,7 @@ const Dashboard = () => {
 
               <Grid item xs={12} lg={7}>
                 <Paper sx={{ overflow: 'hidden' }}>
-                  <Box sx={{ p: 3, borderBottom: '1px solid #2a3142' }}>
+                  <Box sx={{ p: 3, borderBottom: '1px solid #DEDEDE' }}>
                     <Typography variant="h6" sx={{ fontWeight: 700 }}>
                       Recent Trips
                     </Typography>
@@ -321,16 +321,16 @@ const Dashboard = () => {
                   <TableContainer>
                     <Table size="small">
                       <TableHead>
-                        <TableRow sx={{ backgroundColor: '#0f1419' }}>
-                          <TableCell sx={{ fontWeight: 700, color: '#667eea' }}>Trip ID</TableCell>
-                          <TableCell sx={{ fontWeight: 700, color: '#667eea' }}>Route</TableCell>
-                          <TableCell sx={{ fontWeight: 700, color: '#667eea' }}>Status</TableCell>
+                        <TableRow sx={{ backgroundColor: '#F9F9F9' }}>
+                          <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }}>Trip ID</TableCell>
+                          <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }}>Route</TableCell>
+                          <TableCell sx={{ fontWeight: 700, color: '#EB8C00' }}>Status</TableCell>
                         </TableRow>
                       </TableHead>
                       <TableBody>
                         {recentTrips.map((trip) => (
-                          <TableRow key={trip.id} sx={{ '&:hover': { backgroundColor: '#252d3d' } }}>
-                            <TableCell sx={{ fontWeight: 600, color: '#667eea' }}>{trip.trip}</TableCell>
+                          <TableRow key={trip.id} sx={{ '&:hover': { backgroundColor: '#F9F9F9' } }}>
+                            <TableCell sx={{ fontWeight: 600, color: '#EB8C00' }}>{trip.trip}</TableCell>
                             <TableCell>{trip.origin} → {trip.destination}</TableCell>
                             <TableCell>
                               <Chip

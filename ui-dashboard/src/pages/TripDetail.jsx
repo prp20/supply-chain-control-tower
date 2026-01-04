@@ -87,7 +87,7 @@ const TripDetail = () => {
 
     return {
       coordinates: traveledCoordinates,
-      color: '#4ade80',
+      color: '#10b981',
       weight: 5,
       opacity: 0.9,
     };
@@ -181,7 +181,7 @@ const TripDetail = () => {
 
             const route = {
               coordinates: routeCoordinates,
-              color: '#667eea',
+              color: '#EB8C00',
               weight: 3,
               opacity: 0.5,
               label: transformedTrip.trip_id,
@@ -308,21 +308,21 @@ const TripDetail = () => {
   }
 
   return (
-    <Box sx={{ p: 3, backgroundColor: '#0f1419', minHeight: '100vh' }}>
+    <Box sx={{ p: 3, backgroundColor: '#FFFFFF', minHeight: '100vh' }}>
       {/* Back Button */}
       <Button 
         startIcon={<ArrowBack />} 
         onClick={() => navigate('/trips')}
-        sx={{ mb: 2, color: '#667eea' }}
+        sx={{ mb: 2, color: '#EB8C00' }}
       >
         Back to Trips
       </Button>
 
       {/* Header */}
       <Box sx={{ mb: 3 }}>
-        <Typography variant="h4" sx={{ fontWeight: 700, color: '#667eea', mb: 1 }}>
+        <Typography variant="h4" sx={{ fontWeight: 700, color: '#EB8C00', mb: 1 }}>
           Trip Details: {trip?.trip_id} 
-          {isLiveTracking && <span style={{ marginLeft: '10px', color: '#4ade80', fontSize: '0.8em' }}>🔴 Live Tracking</span>}
+          {isLiveTracking && <span style={{ marginLeft: '10px', color: '#10b981', fontSize: '0.8em' }}>🔴 Live Tracking</span>}
           {isSimulating && <span style={{ marginLeft: '10px', color: '#f59e0b', fontSize: '0.8em' }}>▶ Simulating</span>}
         </Typography>
         
@@ -332,8 +332,8 @@ const TripDetail = () => {
             startIcon={isSimulating ? <Stop /> : <PlayArrow />}
             onClick={isSimulating ? stopSimulation : startSimulation}
             sx={{
-              color: isSimulating ? '#ef4444' : '#667eea',
-              borderColor: isSimulating ? '#ef4444' : '#667eea',
+              color: isSimulating ? '#ef4444' : '#EB8C00',
+              borderColor: isSimulating ? '#ef4444' : '#EB8C00',
               '&:hover': {
                 backgroundColor: isSimulating ? 'rgba(239, 68, 68, 0.1)' : 'rgba(102, 126, 234, 0.1)',
               },
@@ -345,8 +345,8 @@ const TripDetail = () => {
             startIcon={<Videocam />}
             onClick={toggleLiveTracking}
             sx={{
-              color: isLiveTracking ? '#4ade80' : '#667eea',
-              borderColor: isLiveTracking ? '#4ade80' : '#667eea',
+              color: isLiveTracking ? '#10b981' : '#EB8C00',
+              borderColor: isLiveTracking ? '#10b981' : '#EB8C00',
               '&:hover': {
                 backgroundColor: isLiveTracking ? 'rgba(74, 222, 128, 0.1)' : 'rgba(102, 126, 234, 0.1)',
               },
@@ -358,7 +358,7 @@ const TripDetail = () => {
       </Box>
 
       {/* Map Container - Always render */}
-      <Paper sx={{ p: 0, height: '600px', background: '#1a1f2e', border: '1px solid #2a3142', overflow: 'hidden', mb: 3 }}>
+      <Paper sx={{ p: 0, height: '600px', background: '#F9F9F9', border: '1px solid #DEDEDE', overflow: 'hidden', mb: 3 }}>
         {fullRouteCoordinates.length > 0 ? (
           <MapComponent 
             routes={routes} 
@@ -379,8 +379,8 @@ const TripDetail = () => {
       <Grid container spacing={3} sx={{ justifyContent: 'center', mb: 3 }}>
         {/* Trip Information Card */}
         <Grid item xs={12} sm={10} md={5}>
-          <Paper sx={{ p: 3, background: '#1a1f2e', border: '1px solid #2a3142' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#667eea', mb: 2 }}>
+          <Paper sx={{ p: 3, background: '#F9F9F9', border: '1px solid #DEDEDE' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#EB8C00', mb: 2 }}>
               Trip Information
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -411,8 +411,8 @@ const TripDetail = () => {
 
         {/* Route Information Card */}
         <Grid item xs={12} sm={10} md={5}>
-          <Paper sx={{ p: 3, background: '#1a1f2e', border: '1px solid #2a3142' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#667eea', mb: 2 }}>
+          <Paper sx={{ p: 3, background: '#F9F9F9', border: '1px solid #DEDEDE' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#EB8C00', mb: 2 }}>
               Route Details
             </Typography>
             <Box sx={{ display: 'flex', flexDirection: 'column', gap: 2 }}>
@@ -420,7 +420,7 @@ const TripDetail = () => {
                 <>
                   <Box>
                     <Typography variant="caption" color="textSecondary">Current Speed</Typography>
-                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#667eea' }}>
+                    <Typography variant="body2" sx={{ fontWeight: 600, color: '#EB8C00' }}>
                       {vehicleMarker.speed ? `${vehicleMarker.speed} km/h` : 'N/A'}
                     </Typography>
                   </Box>
@@ -451,14 +451,14 @@ const TripDetail = () => {
                     sx={{
                       height: 6,
                       borderRadius: 3,
-                      backgroundColor: '#252d3d',
+                      backgroundColor: '#F0F0F0',
                       mt: 0.5,
                       '& .MuiLinearProgress-bar': {
-                        background: 'linear-gradient(90deg, #4ade80 0%, #22c55e 100%)',
+                        background: 'linear-gradient(90deg, #10b981 0%, #22c55e 100%)',
                       },
                     }}
                   />
-                  <Typography variant="caption" color="#4ade80" sx={{ mt: 0.5 }}>
+                  <Typography variant="caption" color="#10b981" sx={{ mt: 0.5 }}>
                     {traveledRoute.coordinates.length > 0 && routes[0]?.distance
                       ? `${((traveledRoute.coordinates.length / routes[0].distance) * 100).toFixed(1)}% Traveled`
                       : 'Tracking...'}
@@ -471,15 +471,15 @@ const TripDetail = () => {
 
         {/* Map Legend Info Card */}
         <Grid item xs={12} sm={10} md={10} sx={{ justifyContent: 'center' }}>
-          <Paper sx={{ p: 3, background: '#1a1f2e', border: '1px solid #2a3142' }}>
-            <Typography variant="h6" sx={{ fontWeight: 700, color: '#667eea', mb: 2 }}>
+          <Paper sx={{ p: 3, background: '#F9F9F9', border: '1px solid #DEDEDE' }}>
+            <Typography variant="h6" sx={{ fontWeight: 700, color: '#EB8C00', mb: 2 }}>
               Map Legend & Status
             </Typography>
             <Grid container spacing={2}>
               <Grid item xs={12} sm={6} md={3}>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <Box sx={{ width: 16, height: 2, backgroundColor: '#667eea' }} />
+                    <Box sx={{ width: 16, height: 2, backgroundColor: '#EB8C00' }} />
                     <Typography variant="body2">Planned Route</Typography>
                   </Box>
                   <Typography variant="caption" color="textSecondary">
@@ -490,7 +490,7 @@ const TripDetail = () => {
               <Grid item xs={12} sm={6} md={3}>
                 <Box>
                   <Box sx={{ display: 'flex', alignItems: 'center', gap: 1, mb: 1 }}>
-                    <Box sx={{ width: 16, height: 2, backgroundColor: '#4ade80' }} />
+                    <Box sx={{ width: 16, height: 2, backgroundColor: '#10b981' }} />
                     <Typography variant="body2">Distance Traveled</Typography>
                   </Box>
                   <Typography variant="caption" color="textSecondary">
@@ -523,7 +523,7 @@ const TripDetail = () => {
             </Grid>
             
             {/* Current Status */}
-            <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #2a3142' }}>
+            <Box sx={{ mt: 3, pt: 2, borderTop: '1px solid #DEDEDE' }}>
               <Typography variant="body2" sx={{ fontWeight: 600, mb: 1 }}>Current Mode:</Typography>
               <Box sx={{ display: 'flex', gap: 1 }}>
                 {isLiveTracking && (

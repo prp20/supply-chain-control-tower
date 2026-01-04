@@ -30,23 +30,23 @@ const MapLegend = () => (
       bottom: 20,
       left: 20,
       zIndex: 1000,
-      backgroundColor: '#1a1f2e',
-      border: '2px solid #2a3142',
+      backgroundColor: '#F9F9F9',
+      border: '2px solid #DEDEDE',
       borderRadius: 1,
       padding: 2,
       maxWidth: 250,
     }}
   >
-    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: '#667eea' }}>
+    <Typography variant="subtitle2" sx={{ fontWeight: 700, mb: 1.5, color: '#EB8C00' }}>
       Route Legend
     </Typography>
     <Box sx={{ display: 'flex', flexDirection: 'column', gap: 1 }}>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <Box sx={{ width: 20, height: 3, backgroundColor: '#667eea', borderRadius: 1 }} />
+        <Box sx={{ width: 20, height: 3, backgroundColor: '#EB8C00', borderRadius: 1 }} />
         <Typography variant="body2" color="textSecondary">Planned Route</Typography>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>
-        <Box sx={{ width: 20, height: 3, backgroundColor: '#4ade80', borderRadius: 1 }} />
+        <Box sx={{ width: 20, height: 3, backgroundColor: '#10b981', borderRadius: 1 }} />
         <Typography variant="body2" color="textSecondary">Distance Traveled</Typography>
       </Box>
       <Box sx={{ display: 'flex', alignItems: 'center', gap: 1.5 }}>

@@ -106,8 +106,8 @@ def consume():
                 publish_inventory_analysis(part_id, score, risk, part)
                 
                 # Autonomous replenishment (new order)
-                if needs_replenishment(part):
-                    publish_replenishment(part_id, part)
+                # if needs_replenishment(part):
+                #     publish_replenishment(part_id, part)
 
                 # Advance stream offset
                 STREAMS[stream] = msg_id
